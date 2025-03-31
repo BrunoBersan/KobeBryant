@@ -1,101 +1,184 @@
-# pd_kobe
+# Projeto de Previsão de Arremessos do Kobe Bryant
 
-[![Powered by Kedro](https://img.shields.io/badge/powered_by-kedro-ffc900?logo=kedro)](https://kedro.org)
+## Visão Geral
 
-## Overview
+Este projeto foi desenvolvido como parte do **Curso de Especialização em Inteligência Artificial (Segundo Módulo)** e tem como objetivo prever se um arremesso do Kobe Bryant foi convertido ou não com base em dados históricos de jogos da NBA. Utilizando técnicas de machine learning, o projeto emprega o framework **Kedro** para gerenciamento de pipelines de dados, o **PyCaret** para treinamento e ajuste de modelos, e o **MLflow** para rastreamento de experimentos e implantação de modelos. O objetivo é construir um pipeline robusto que processe os dados, treine modelos, faça previsões e visualize os resultados de forma clara e informativa.
 
-This is your new Kedro project, which was generated using `kedro 0.19.12`.
+O conjunto de dados utilizado contém características como a localização do arremesso (`lat` e `lon`), tipo de arremesso (`shot_type`), tipo de ação (`action_type`), distância do arremesso (`shot_distance`), período do jogo (`period`) e a variável alvo `shot_made_flag` (1 para arremesso convertido, 0 para arremesso errado). O projeto abrange pré-processamento de dados, treinamento de modelos, previsão por meio de uma API e visualização das previsões em um gráfico de dispersão.
 
-Take a look at the [Kedro documentation](https://docs.kedro.org) to get started.
+---
 
-## Rules and guidelines
+## Estrutura do Projeto
 
-In order to get the best out of the template:
+O projeto é organizado utilizando o framework **Kedro**, que garante um pipeline de dados modular e reprodutível. Abaixo está a estrutura do projeto:
 
-* Don't remove any lines from the `.gitignore` file we provide
-* Make sure your results can be reproduced by following a data engineering convention
-* Don't commit data to your repository
-* Don't commit any credentials or your local configuration to your repository. Keep all your credentials and local configuration in `conf/local/`
+pd-kobe/
+├── conf/                    # Arquivos de configuração (configurações do Kedro, parâmetros, catálogo)
+├── data/                    # Diretórios de dados (brutos, processados, saídas de modelo, etc.)
+│   ├── 01_raw/              # Conjunto de dados bruto
+│   ├── 02_intermediate/     # Dados intermediários
+│   ├── 03_primary/          # Dados primários
+│   ├── 04_feature/          # Dados com engenharia de features
+│   ├── 05_model_input/      # Dados prontos para o modelo
+│   ├── 06_models/           # Modelos treinados
+│   ├── 07_model_output/     # Saídas do modelo (previsões)
+│   ├── 08_reporting/        # Visualizações e relatórios (gráficos)
+├── src/                     # Código-fonte do projeto
+│   ├── pd_kobe/             # Módulo principal do projeto
+│   │   ├── pipelines/       # Pipelines do Kedro
+│   │   │   ├── data_preparation/   # Pipeline de pré-processamento
+│   │   │   ├── data_processing/    # Pipeline de seleção e engenharia de features
+│   │   │   ├── model_trainig/      # Pipeline de treinamento de modelos
+│   │   │   ├── model_predicts/     # Pipeline resultados e previsões dos modelos treinados
+│   │   │   ├── reporting/          # Gráficos e métricas visuais
+│   │   │   └── nodes.py            # Funções dos nós do pipeline
+│   │   ├── settings.py         # Configurações do projeto
+│   │   └── init.py             # Arquivo de inicialização
+├── mlruns/                  # Diretório do MLflow para rastreamento de experimentos
+├── predict.py               # Script para previsões manuais (opcional)
+├── requirements.txt         # Dependências do projeto
+└── README.md                # Documentação do projeto
 
-## How to install dependencies
+---
 
-Declare any dependencies in `requirements.txt` for `pip` installation.
+## Funcionalidades Principais
 
-To install them, run:
+1. **Pré-processamento de Dados**:
+   - 
 
-```
+2. **Treinamento de Modelos**:
+   - Dois modelos são treinados: Regressão Logística (`logistic_regression_model`) e Árvore de Decisão (`decision_tree_model`).
+   - O PyCaret é usado para configurar o ambiente de treinamento, criar os modelos e ajustá-los com busca bayesiana de hiperparâmetros (usando a biblioteca `scikit-optimize`).
+   - O MLflow rastreia os experimentos, logando métricas e os modelos treinados.
+
+3. **Previsão via API**:
+   - O modelo treinado é servido via MLflow usando o comando `mlflow models serve`.
+   - Um nó do pipeline (`serve_and_predict`) automatiza o processo de subir o servidor do MLflow, fazer a requisição à API (`/invocations`) e desligar o servidor.
+   - As previsões são salvas em `data/07_model_output/predictions.csv`.
+
+4. **Visualização**:
+   - Um gráfico de dispersão é gerado para visualizar os locais dos arremessos (`lat` e `lon`) e as previsões do modelo.
+   - Arremessos previstos como convertidos (`1`) são representados por **bolinhas verdes**, e arremessos previstos como errados (`0`) por **bolinhas vermelhas**.
+   - O gráfico é salvo em `data/08_reporting/shot_predictions.png`.
+
+---
+
+## Pré-requisitos
+
+Para executar o projeto, você precisa ter as seguintes ferramentas instaladas:
+
+- **Python 3.8+**
+- **Conda** (para gerenciamento de ambientes)
+- **Kedro 0.19.12**
+- **MLflow**
+- **PyCaret**
+- **Pandas**
+- **Matplotlib** (para visualizações)
+- **Seaborn** (opcional, para gráficos estilizados)
+- **Scikit-learn**
+- **Scikit-optimize** (para ajuste de hiperparâmetros)
+
+Você pode instalar as dependências listadas no arquivo `requirements.txt`:
+
 pip install -r requirements.txt
-```
 
-## How to run your Kedro pipeline
+## Como executar o projeto
 
-You can run your Kedro project with:
+1. ## Configurar o ambiente
+    - Crie e ative um ambiente Conda para o projeto:
+        conda create -n kedro_env python=3.8
+        conda activate kedro_env
+        pip install -r requirements.txt
 
-```
-kedro run
-```
+2. ## Configurar o MLflow      
+    - Defina o URI de rastreamento do MLflow (já configurado no projeto):
+        export MLFLOW_TRACKING_URI=file:///C:/Projetos/especializacao_ia/segundo_modulo/pd-kobe/mlruns
 
-## How to test your Kedro project
+3. ## Executar o Pipeline
+    - kedro run
 
-Have a look at the file `src/tests/test_run.py` for instructions on how to write your tests. You can run your tests as follows:
-
-```
-pytest
-```
-
-You can configure the coverage threshold in your project's `pyproject.toml` file under the `[tool.coverage.report]` section.
+    Isso irá:
+    1. Pré-processar os dados.
+    2. Treinar os modelos (Regressão Logística e Árvore de Decisão).
+    3. Fazer previsões dos modelos localmente e também usando a API do MLflow.
+    4. Gerar o gráfico de dispersão, curva, roc, métricas e mais.
 
 
-## Project dependencies
+## Detalhes dos Pipelines
 
-To see and update the dependency requirements for your project use `requirements.txt`. You can install the project requirements with `pip install -r requirements.txt`.
+1. ## Preparação dos Dados (data_preparation)
+O pipeline data_preparation é responsável pela limpeza inicial dos dados brutos, garantindo que estejam prontos para as próximas etapas do projeto. Ele processa tanto o conjunto de dados principal (data_shots) quanto o conjunto de produção (data_shots_prod). As principais etapas incluem:
 
-[Further information about project dependencies](https://docs.kedro.org/en/stable/kedro_project_setup/dependencies.html#project-specific-dependencies)
+- Tratamento de Valores Nulos (handle_missing_values): Remove todas as linhas que contêm valores nulos no conjunto de dados, garantindo que o modelo receba apenas dados completos.
 
-## How to work with Kedro and notebooks
+- Remoção de Duplicatas e Validações (remove_duplicates_and_validate): Elimina registros duplicados, mantendo apenas a última ocorrência, e realiza validações adicionais para assegurar a integridade dos dados.
+O pipeline contém quatro nós:
 
-> Note: Using `kedro jupyter` or `kedro ipython` to run your notebook provides these variables in scope: `context`, 'session', `catalog`, and `pipelines`.
->
-> Jupyter, JupyterLab, and IPython are already included in the project requirements by default, so once you have run `pip install -r requirements.txt` you will not need to take any extra steps before you use them.
+Dois nós para o conjunto de dados principal (data_shots): handle_missing_values_node e remove_duplicates_and_validate_node, que geram o dataset data_shots_normalized.
+Dois nós para o conjunto de produção (data_shots_prod): handle_missing_values_node_prod e remove_duplicates_and_validate_node_prod, que geram o dataset data_shots_prod_normalized.
 
-### Jupyter
-To use Jupyter notebooks in your Kedro project, you need to install Jupyter:
 
-```
-pip install jupyter
-```
+2. ## Processamento dos Dados e Seleção de Features (data_processing)
+O pipeline data_processing realiza o processamento e a seleção de features, preparando os dados para o treinamento do modelo. Ele também divide o conjunto de dados em treino e teste. As etapas incluem:
 
-After installing Jupyter, you can start a local notebook server:
+- Análise e Seleção de Features (analyze_and_select_features): Seleciona um subconjunto de features relevantes para o modelo, incluindo lat, lon, minutes_remaining, period, playoffs, shot_distance, loc_x, loc_y e shot_made_flag. Essa etapa é aplicada tanto ao conjunto de dados principal (data_shots_normalized) quanto ao conjunto de produção (data_shots_prod_normalized), gerando os datasets data_features e data_features_prod, respectivamente.
 
-```
-kedro jupyter notebook
-```
+- Divisão dos Dados (split_data): Divide o conjunto de dados data_features em conjuntos de treino (shots_train) e teste (shots_test) na proporção 80/20, utilizando estratificação com base na variável alvo shot_made_flag para manter a proporção de classes. A divisão é feita com um random_state=42 para garantir reprodutibilidade.
 
-### JupyterLab
-To use JupyterLab, you need to install it:
+O pipeline contém três nós:
 
-```
-pip install jupyterlab
-```
+- analyze_and_select_features_node: Processa o conjunto de dados principal.
+- analyze_and_select_features_node_prod: Processa o conjunto de produção.
 
-You can also start JupyterLab:
+- split_data_node: Divide o conjunto de dados principal em treino e teste.
 
-```
-kedro jupyter lab
-```
+3. ## Treinamento de Modelos (model_training)
+O pipeline model_training é responsável pelo treinamento e ajuste de dois modelos de machine learning: uma Regressão Logística e uma Árvore de Decisão. Ele utiliza o PyCaret para configurar o ambiente de treinamento e o MLflow para rastrear os experimentos. As etapas incluem:
 
-### IPython
-And if you want to run an IPython session:
+- Configuração do PyCaret (configure_pycaret_setup): Configura o ambiente de treinamento do PyCaret, definindo a variável alvo (shot_made_flag), utilizando todos os núcleos disponíveis (n_jobs=-1) e habilitando o uso de GPU (use_gpu=True).
+- Treinamento da Regressão Logística (logistic_regression_model): Treina um modelo de Regressão Logística com ajuste de hiperparâmetros usando busca bayesiana (via scikit-optimize). O espaço de busca inclui parâmetros como penalty, C, class_weight, max_iter, tol e solver. O modelo é otimizado com base no F1 Score, e os resultados (métricas e modelo) são logados no MLflow.
+- Treinamento da Árvore de Decisão (decision_tree_model): Treina um modelo de Árvore de Decisão com ajuste de hiperparâmetros, também usando busca bayesiana. O espaço de busca inclui parâmetros como criterion, splitter, max_depth, min_samples_split, min_samples_leaf, max_features, ccp_alpha e max_leaf_nodes. O modelo é otimizado com base no F1 Score, e os resultados são logados no MLflow.
+O pipeline contém dois nós:
 
-```
-kedro ipython
-```
+- logistic_regression_model: Treina e ajusta a Regressão Logística, gerando o modelo lr_tuned.
+- decision_tree_model: Treina e ajusta a Árvore de Decisão, gerando o modelo dt_tuned.
 
-### How to ignore notebook output cells in `git`
-To automatically strip out all output cell contents before committing to `git`, you can use tools like [`nbstripout`](https://github.com/kynan/nbstripout). For example, you can add a hook in `.git/config` with `nbstripout --install`. This will run `nbstripout` before anything is committed to `git`.
+4. ## Previsões dos Modelos com Dados de Treino e Teste (model_predicts)
+O pipeline model_predicts realiza previsões com os modelos treinados (Regressão Logística e Árvore de Decisão) nos conjuntos de treino (shots_train) e teste (shots_test), além de calcular métricas de desempenho. As etapas incluem:
 
-> *Note:* Your output cells will be retained locally.
+- Cálculo de Métricas e Previsões (calculate_model_metrics): Faz previsões com os modelos nos dados de treino e teste, calcula métricas de desempenho (acurácia, precisão, recall, F1 Score e ROC AUC) e retorna três datasets:
+- Um DataFrame com as métricas (metrics).
+- Um DataFrame com as previsões e os valores reais (predictions).
+- Um DataFrame com as probabilidades previstas (predicted_probabilities).
 
-## Package your Kedro project
+O pipeline contém quatro nós, gerados dinamicamente pela função generate_node:
 
-[Further information about building project documentation and packaging your project](https://docs.kedro.org/en/stable/tutorial/package_a_project.html)
+calculate_model_metrics_node_LR_train: Calcula métricas e previsões da Regressão Logística no conjunto de treino.
+
+calculate_model_metrics_node_DT_train: Calcula métricas e previsões da Árvore de Decisão no conjunto de treino.
+
+calculate_model_metrics_node_LR_test: Calcula métricas e previsões da Regressão Logística no conjunto de teste.
+
+calculate_model_metrics_node_DT_test: Calcula métricas e previsões da Árvore de Decisão no conjunto de teste.
+
+
+5. ## Relatórios, Gráficos e Métricas (reporting)
+O pipeline reporting é responsável por gerar relatórios visuais e gráficos para avaliar o desempenho dos modelos e visualizar os resultados das previsões. Ele também faz previsões no conjunto de produção (data_features_prod) via API do MLflow. As etapas incluem:
+
+- Geração de Relatórios Visuais (save_model_plots_metrics): Gera cinco tipos de visualizações para cada modelo (Regressão Logística e Árvore de Decisão) nos conjuntos de treino e teste:
+- Matriz de Confusão: Mostra a distribuição de previsões corretas e incorretas.
+- Curva ROC: Exibe a curva ROC e o valor de AUC para avaliar a capacidade de discriminação do modelo.
+- Tabela de Métricas: Apresenta as métricas de desempenho (acurácia, precisão, recall, F1 Score, ROC AUC) em formato de tabela.
+- Distribuição de Probabilidades: Plota um histograma das probabilidades previstas, mostrando a distribuição das previsões.
+- Gráfico de Chutes do Kobe: Um gráfico de dispersão que mostra os locais dos arremessos (loc_x e loc_y), com bolinhas verdes para acertos e vermelhas para erros, com base nos valores reais (shot_made_flag).
+Esses gráficos são salvos no diretório data/08_reporting/ com nomes que indicam o modelo e o conjunto de dados (ex.: confusion_matrix_report_LR_train.png).
+- Previsão via API (serve_and_predict): Sobe o servidor do MLflow, faz a requisição à API (/invocations) para prever os arremessos no conjunto de produção (data_features_prod) e retorna as previsões como um DataFrame (predictions).
+- Gráfico de Previsões (plot_shot_predictions): Gera um gráfico de dispersão com os locais dos arremessos no conjunto de produção (lat e lon), usando as previsões do modelo. Arremessos previstos como convertidos (1) são representados por bolinhas verdes, e arremessos previstos como errados (0) por bolinhas vermelhas. O gráfico é salvo em data/08_reporting/shot_predictions.png.
+O pipeline contém seis nós:
+
+- save_model_plots_metrics_LR_train: Gera relatórios visuais para a Regressão Logística no conjunto de treino.
+- save_model_plots_metrics_DT_train: Gera relatórios visuais para a Árvore de Decisão no conjunto de treino.
+- save_model_plots_metrics_LR_test: Gera relatórios visuais para a Regressão Logística no conjunto de teste.
+- save_model_plots_metrics_DT_test: Gera relatórios visuais para a Árvore de Decisão no conjunto de teste.
+- serve_and_predict_node: Faz previsões no conjunto de produção via API do MLflow.
+- plot_shot_predictions_node: Gera o gráfico de dispersão com as previsões no conjunto de produção.
