@@ -1,0 +1,15 @@
+artifact_uri: file:///C:/Projetos/especializacao_ia/segundo_modulo/pd-kobe/mlruns/992057042402351728/80051398b00e4276b8c9a033f2b55538/artifacts
+end_time: 1743454194950
+entry_point_name: ''
+experiment_id: '992057042402351728'
+lifecycle_stage: active
+run_id: 80051398b00e4276b8c9a033f2b55538
+run_name: reporting
+run_uuid: 80051398b00e4276b8c9a033f2b55538
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1743454179777
+status: 3
+tags: []
+user_id: Bruno Adalberto
