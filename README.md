@@ -115,76 +115,51 @@ O pipeline data_preparation é responsável pela limpeza inicial dos dados bruto
 - Tratamento de Valores Nulos (handle_missing_values): Remove todas as linhas que contêm valores nulos no conjunto de dados, garantindo que o modelo receba apenas dados completos.
 
 - Remoção de Duplicatas e Validações (remove_duplicates_and_validate): Elimina registros duplicados, mantendo apenas a última ocorrência, e realiza validações adicionais para assegurar a integridade dos dados.
-O pipeline contém quatro nós:
-
-Dois nós para o conjunto de dados principal (data_shots): handle_missing_values_node e remove_duplicates_and_validate_node, que geram o dataset data_shots_normalized.
-Dois nós para o conjunto de produção (data_shots_prod): handle_missing_values_node_prod e remove_duplicates_and_validate_node_prod, que geram o dataset data_shots_prod_normalized.
 
 
 2. **Processamento dos Dados e Seleção de Features (data_processing)**
 O pipeline data_processing realiza o processamento e a seleção de features, preparando os dados para o treinamento do modelo. Ele também divide o conjunto de dados em treino e teste. As etapas incluem:
 
-- Análise e Seleção de Features (analyze_and_select_features): Seleciona um subconjunto de features relevantes para o modelo, incluindo lat, lon, minutes_remaining, period, playoffs, shot_distance, loc_x, loc_y e shot_made_flag. Essa etapa é aplicada tanto ao conjunto de dados principal (data_shots_normalized) quanto ao conjunto de produção (data_shots_prod_normalized), gerando os datasets data_features e data_features_prod, respectivamente.
+- **Análise e Seleção de Features (analyze_and_select_features)**: Seleciona um subconjunto de features relevantes para o modelo, incluindo lat, lon, minutes_remaining, period, playoffs, shot_distance, loc_x, loc_y e shot_made_flag. Essa etapa é aplicada tanto ao conjunto de dados principal (data_shots_normalized) quanto ao conjunto de produção (data_shots_prod_normalized), gerando os datasets data_features e data_features_prod, respectivamente.
 
-- Divisão dos Dados (split_data): Divide o conjunto de dados data_features em conjuntos de treino (shots_train) e teste (shots_test) na proporção 80/20, utilizando estratificação com base na variável alvo shot_made_flag para manter a proporção de classes. A divisão é feita com um random_state=42 para garantir reprodutibilidade.
+- **Divisão dos Dados (split_data)**: Divide o conjunto de dados data_features em conjuntos de treino (shots_train) e teste (shots_test) na proporção 80/20, utilizando estratificação com base na variável alvo shot_made_flag para manter a proporção de classes. A divisão é feita com um random_state=42 para garantir reprodutibilidade.
 
-O pipeline contém três nós:
 
-- analyze_and_select_features_node: Processa o conjunto de dados principal.
-- analyze_and_select_features_node_prod: Processa o conjunto de produção.
-
-- split_data_node: Divide o conjunto de dados principal em treino e teste.
+- **split_data_node**: Divide o conjunto de dados principal em treino e teste.
 
 3. **Treinamento de Modelos (model_training)**
 O pipeline model_training é responsável pelo treinamento e ajuste de dois modelos de machine learning: uma Regressão Logística e uma Árvore de Decisão. Ele utiliza o PyCaret para configurar o ambiente de treinamento e o MLflow para rastrear os experimentos. As etapas incluem:
 
-- Configuração do PyCaret (configure_pycaret_setup): Configura o ambiente de treinamento do PyCaret, definindo a variável alvo (shot_made_flag), utilizando todos os núcleos disponíveis (n_jobs=-1) e habilitando o uso de GPU (use_gpu=True).
-- Treinamento da Regressão Logística (logistic_regression_model): Treina um modelo de Regressão Logística com ajuste de hiperparâmetros usando busca bayesiana (via scikit-optimize). O espaço de busca inclui parâmetros como penalty, C, class_weight, max_iter, tol e solver. O modelo é otimizado com base no F1 Score, e os resultados (métricas e modelo) são logados no MLflow.
-- Treinamento da Árvore de Decisão (decision_tree_model): Treina um modelo de Árvore de Decisão com ajuste de hiperparâmetros, também usando busca bayesiana. O espaço de busca inclui parâmetros como criterion, splitter, max_depth, min_samples_split, min_samples_leaf, max_features, ccp_alpha e max_leaf_nodes. O modelo é otimizado com base no F1 Score, e os resultados são logados no MLflow.
+- **Configuração do PyCaret (configure_pycaret_setup)**: Configura o ambiente de treinamento do PyCaret, definindo a variável alvo (shot_made_flag), utilizando todos os núcleos disponíveis (n_jobs=-1) e habilitando o uso de GPU (use_gpu=True).
+- **Treinamento da Regressão Logística (logistic_regression_model)**: Treina um modelo de Regressão Logística com ajuste de hiperparâmetros usando busca bayesiana (via scikit-optimize). O espaço de busca inclui parâmetros como penalty, C, class_weight, max_iter, tol e solver. O modelo é otimizado com base no F1 Score, e os resultados (métricas e modelo) são logados no MLflow.
+- **Treinamento da Árvore de Decisão (decision_tree_model)**: Treina um modelo de Árvore de Decisão com ajuste de hiperparâmetros, também usando busca bayesiana. O espaço de busca inclui parâmetros como criterion, splitter, max_depth, min_samples_split, min_samples_leaf, max_features, ccp_alpha e max_leaf_nodes. O modelo é otimizado com base no F1 Score, e os resultados são logados no MLflow.
 O pipeline contém dois nós:
 
-- logistic_regression_model: Treina e ajusta a Regressão Logística, gerando o modelo lr_tuned.
-- decision_tree_model: Treina e ajusta a Árvore de Decisão, gerando o modelo dt_tuned.
+- *logistic_regression_model*: Treina e ajusta a Regressão Logística, gerando o modelo lr_tuned.
+- *decision_tree_model*: Treina e ajusta a Árvore de Decisão, gerando o modelo dt_tuned.
 
 4. **Previsões dos Modelos com Dados de Treino e Teste (model_predicts)**
 O pipeline model_predicts realiza previsões com os modelos treinados (Regressão Logística e Árvore de Decisão) nos conjuntos de treino (shots_train) e teste (shots_test), além de calcular métricas de desempenho. As etapas incluem:
 
-- Cálculo de Métricas e Previsões (calculate_model_metrics): Faz previsões com os modelos nos dados de treino e teste, calcula métricas de desempenho (acurácia, precisão, recall, F1 Score e ROC AUC) e retorna três datasets:
+- **Cálculo de Métricas e Previsões (calculate_model_metrics)**: Faz previsões com os modelos nos dados de treino e teste, calcula métricas de desempenho (acurácia, precisão, recall, F1 Score e ROC AUC) e retorna três datasets:
 - Um DataFrame com as métricas (metrics).
 - Um DataFrame com as previsões e os valores reais (predictions).
 - Um DataFrame com as probabilidades previstas (predicted_probabilities).
-
-O pipeline contém quatro nós, gerados dinamicamente pela função generate_node:
-
-calculate_model_metrics_node_LR_train: Calcula métricas e previsões da Regressão Logística no conjunto de treino.
-
-calculate_model_metrics_node_DT_train: Calcula métricas e previsões da Árvore de Decisão no conjunto de treino.
-
-calculate_model_metrics_node_LR_test: Calcula métricas e previsões da Regressão Logística no conjunto de teste.
-
-calculate_model_metrics_node_DT_test: Calcula métricas e previsões da Árvore de Decisão no conjunto de teste.
 
 
 5. **Relatórios, Gráficos e Métricas (reporting)**
 O pipeline reporting é responsável por gerar relatórios visuais e gráficos para avaliar o desempenho dos modelos e visualizar os resultados das previsões. Ele também faz previsões no conjunto de produção (data_features_prod) via API do MLflow. As etapas incluem:
 
-- Geração de Relatórios Visuais (save_model_plots_metrics): Gera cinco tipos de visualizações para cada modelo (Regressão Logística e Árvore de Decisão) nos conjuntos de treino e teste:
-- Matriz de Confusão: Mostra a distribuição de previsões corretas e incorretas.
-- Curva ROC: Exibe a curva ROC e o valor de AUC para avaliar a capacidade de discriminação do modelo.
-- Tabela de Métricas: Apresenta as métricas de desempenho (acurácia, precisão, recall, F1 Score, ROC AUC) em formato de tabela.
-- Distribuição de Probabilidades: Plota um histograma das probabilidades previstas, mostrando a distribuição das previsões.
-- Gráfico de Chutes do Kobe: Um gráfico de dispersão que mostra os locais dos arremessos (loc_x e loc_y), com bolinhas verdes para acertos e vermelhas para erros, com base nos valores reais (shot_made_flag).
-Esses gráficos são salvos no diretório data/08_reporting/ com nomes que indicam o modelo e o conjunto de dados (ex.: confusion_matrix_report_LR_train.png).
-- Previsão via API (serve_and_predict): Sobe o servidor do MLflow, faz a requisição à API (/invocations) para prever os arremessos no conjunto de produção (data_features_prod) e retorna as previsões como um DataFrame (predictions).
-- Gráfico de Previsões (plot_shot_predictions): Gera um gráfico de dispersão com os locais dos arremessos no conjunto de produção (lat e lon), usando as previsões do modelo. Arremessos previstos como convertidos (1) são representados por bolinhas verdes, e arremessos previstos como errados (0) por bolinhas vermelhas. O gráfico é salvo em data/08_reporting/shot_predictions.png.
-O pipeline contém seis nós:
+- **Geração de Relatórios Visuais (save_model_plots_metrics)**: Gera cinco tipos de visualizações para cada modelo (Regressão Logística e Árvore de Decisão) nos conjuntos de treino e teste:
 
-- save_model_plots_metrics_LR_train: Gera relatórios visuais para a Regressão Logística no conjunto de treino.
-- save_model_plots_metrics_DT_train: Gera relatórios visuais para a Árvore de Decisão no conjunto de treino.
-- save_model_plots_metrics_LR_test: Gera relatórios visuais para a Regressão Logística no conjunto de teste.
-- save_model_plots_metrics_DT_test: Gera relatórios visuais para a Árvore de Decisão no conjunto de teste.
-- serve_and_predict_node: Faz previsões no conjunto de produção via API do MLflow.
-- plot_shot_predictions_node: Gera o gráfico de dispersão com as previsões no conjunto de produção.
+- **Matriz de Confusão**: Mostra a distribuição de previsões corretas e incorretas.
+- **Curva ROC**: Exibe a curva ROC e o valor de AUC para avaliar a capacidade de discriminação do modelo.
+- **Tabela de Métricas**: Apresenta as métricas de desempenho (acurácia, precisão, recall, F1 Score, ROC AUC) em formato de tabela.
+- **Distribuição de Probabilidades**: Plota um histograma das probabilidades previstas, mostrando a distribuição das previsões.
+- **Gráfico de Chutes do Kobe**: Um gráfico de dispersão que mostra os locais dos arremessos (loc_x e loc_y), com bolinhas verdes para acertos e vermelhas para erros, com base nos valores reais (shot_made_flag).
+Esses gráficos são salvos no diretório data/08_reporting/ com nomes que indicam o modelo e o conjunto de dados (ex.: confusion_matrix_report_LR_train.png).
+- **Previsão via API (serve_and_predict)**: Sobe o servidor do MLflow, faz a requisição à API (/invocations) para prever os arremessos no conjunto de produção (data_features_prod) e retorna as previsões como um DataFrame (predictions).
+- **Gráfico de Previsões (plot_shot_predictions)**: Gera um gráfico de dispersão com os locais dos arremessos no conjunto de produção (lat e lon), usando as previsões do modelo. Arremessos previstos como convertidos (1) são representados por bolinhas verdes, e arremessos previstos como errados (0) por bolinhas vermelhas. O gráfico é salvo em data/08_reporting/shot_predictions.png.
 
 
 ## Resultados
@@ -205,4 +180,4 @@ O pipeline contém seis nós:
 **Modelos Mais Complexos**: Testar modelos mais avançados, como Random Forest ou Gradient Boosting, pode capturar melhor os padrões nos dados.
 
 
-Sinta-se à vontade para usar, modificar e distribuir o código conforme necessário.
+## Sinta-se à vontade para usar, modificar e distribuir o código conforme necessário. ##
