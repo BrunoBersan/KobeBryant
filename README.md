@@ -12,6 +12,8 @@ O conjunto de dados utilizado contém características como a localização do a
 
 O projeto é organizado utilizando o framework **Kedro**, que garante um pipeline de dados modular e reprodutível. Abaixo está a estrutura do projeto:
 
+```
+
 pd-kobe/
 ├── conf/                           # Arquivos de configuração (configurações do Kedro, parâmetros, catálogo)
 ├── data/                           # Diretórios de dados (brutos, processados, saídas de modelo, etc.)
@@ -38,6 +40,8 @@ pd-kobe/
 ├── predict.py                      # Script para previsões manuais (opcional)
 ├── requirements.txt                # Dependências do projeto
 └── README.md                       # Documentação do projeto
+
+```
 ---
 
 ## Funcionalidades Principais
@@ -181,3 +185,6 @@ O pipeline contém seis nós:
 - save_model_plots_metrics_DT_test: Gera relatórios visuais para a Árvore de Decisão no conjunto de teste.
 - serve_and_predict_node: Faz previsões no conjunto de produção via API do MLflow.
 - plot_shot_predictions_node: Gera o gráfico de dispersão com as previsões no conjunto de produção.
+
+
+ 
