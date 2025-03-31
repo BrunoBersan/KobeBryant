@@ -165,7 +165,9 @@ Esses gráficos são salvos no diretório data/08_reporting/ com nomes que indic
 ## Resultados
 
 **Modelos Treinados**: Os modelos são salvos no MLflow e podem ser acessados via UI (mlflow ui) em http://localhost:5000.
+
 **Previsões**: As previsões são binárias (0 para erro, 1 para acerto) e salvas em um arquivo CSV.
+
 **Gráfico de Dispersão**: O gráfico mostra os locais dos arremessos com bolinhas verdes (acertos) e vermelhas (erros), facilitando a análise visual das previsões.
 
 
