@@ -87,17 +87,17 @@ pip install -r requirements.txt
 
 ## Como executar o projeto
 
-1. ## Configurar o ambiente
+1. **Configurar o ambiente**
     - Crie e ative um ambiente Conda para o projeto:
         conda create -n kedro_env python=3.8
         conda activate kedro_env
         pip install -r requirements.txt
 
-2. ## Configurar o MLflow      
+2. **Configurar o MLflow**
     - Defina o URI de rastreamento do MLflow (já configurado no projeto):
         export MLFLOW_TRACKING_URI=file:///C:/Projetos/especializacao_ia/segundo_modulo/pd-kobe/mlruns
 
-3. ## Executar o Pipeline
+3. **Executar o Pipeline**
     - kedro run
 
     Isso irá:
@@ -109,7 +109,7 @@ pip install -r requirements.txt
 
 ## Detalhes dos Pipelines
 
-1. ## Preparação dos Dados (data_preparation)
+1. **Preparação dos Dados (data_preparation)**
 O pipeline data_preparation é responsável pela limpeza inicial dos dados brutos, garantindo que estejam prontos para as próximas etapas do projeto. Ele processa tanto o conjunto de dados principal (data_shots) quanto o conjunto de produção (data_shots_prod). As principais etapas incluem:
 
 - Tratamento de Valores Nulos (handle_missing_values): Remove todas as linhas que contêm valores nulos no conjunto de dados, garantindo que o modelo receba apenas dados completos.
@@ -121,7 +121,7 @@ Dois nós para o conjunto de dados principal (data_shots): handle_missing_values
 Dois nós para o conjunto de produção (data_shots_prod): handle_missing_values_node_prod e remove_duplicates_and_validate_node_prod, que geram o dataset data_shots_prod_normalized.
 
 
-2. ## Processamento dos Dados e Seleção de Features (data_processing)
+2. **Processamento dos Dados e Seleção de Features (data_processing)**
 O pipeline data_processing realiza o processamento e a seleção de features, preparando os dados para o treinamento do modelo. Ele também divide o conjunto de dados em treino e teste. As etapas incluem:
 
 - Análise e Seleção de Features (analyze_and_select_features): Seleciona um subconjunto de features relevantes para o modelo, incluindo lat, lon, minutes_remaining, period, playoffs, shot_distance, loc_x, loc_y e shot_made_flag. Essa etapa é aplicada tanto ao conjunto de dados principal (data_shots_normalized) quanto ao conjunto de produção (data_shots_prod_normalized), gerando os datasets data_features e data_features_prod, respectivamente.
@@ -135,7 +135,7 @@ O pipeline contém três nós:
 
 - split_data_node: Divide o conjunto de dados principal em treino e teste.
 
-3. ## Treinamento de Modelos (model_training)
+3. **Treinamento de Modelos (model_training)**
 O pipeline model_training é responsável pelo treinamento e ajuste de dois modelos de machine learning: uma Regressão Logística e uma Árvore de Decisão. Ele utiliza o PyCaret para configurar o ambiente de treinamento e o MLflow para rastrear os experimentos. As etapas incluem:
 
 - Configuração do PyCaret (configure_pycaret_setup): Configura o ambiente de treinamento do PyCaret, definindo a variável alvo (shot_made_flag), utilizando todos os núcleos disponíveis (n_jobs=-1) e habilitando o uso de GPU (use_gpu=True).
@@ -146,7 +146,7 @@ O pipeline contém dois nós:
 - logistic_regression_model: Treina e ajusta a Regressão Logística, gerando o modelo lr_tuned.
 - decision_tree_model: Treina e ajusta a Árvore de Decisão, gerando o modelo dt_tuned.
 
-4. ## Previsões dos Modelos com Dados de Treino e Teste (model_predicts)
+4. **Previsões dos Modelos com Dados de Treino e Teste (model_predicts)**
 O pipeline model_predicts realiza previsões com os modelos treinados (Regressão Logística e Árvore de Decisão) nos conjuntos de treino (shots_train) e teste (shots_test), além de calcular métricas de desempenho. As etapas incluem:
 
 - Cálculo de Métricas e Previsões (calculate_model_metrics): Faz previsões com os modelos nos dados de treino e teste, calcula métricas de desempenho (acurácia, precisão, recall, F1 Score e ROC AUC) e retorna três datasets:
@@ -165,7 +165,7 @@ calculate_model_metrics_node_LR_test: Calcula métricas e previsões da Regress�
 calculate_model_metrics_node_DT_test: Calcula métricas e previsões da Árvore de Decisão no conjunto de teste.
 
 
-5. ## Relatórios, Gráficos e Métricas (reporting)
+5. **Relatórios, Gráficos e Métricas (reporting)**
 O pipeline reporting é responsável por gerar relatórios visuais e gráficos para avaliar o desempenho dos modelos e visualizar os resultados das previsões. Ele também faz previsões no conjunto de produção (data_features_prod) via API do MLflow. As etapas incluem:
 
 - Geração de Relatórios Visuais (save_model_plots_metrics): Gera cinco tipos de visualizações para cada modelo (Regressão Logística e Árvore de Decisão) nos conjuntos de treino e teste:
@@ -187,4 +187,22 @@ O pipeline contém seis nós:
 - plot_shot_predictions_node: Gera o gráfico de dispersão com as previsões no conjunto de produção.
 
 
- 
+## Resultados
+
+**Modelos Treinados**: Os modelos são salvos no MLflow e podem ser acessados via UI (mlflow ui) em http://localhost:5000.
+**Previsões**: As previsões são binárias (0 para erro, 1 para acerto) e salvas em um arquivo CSV.
+**Gráfico de Dispersão**: O gráfico mostra os locais dos arremessos com bolinhas verdes (acertos) e vermelhas (erros), facilitando a análise visual das previsões.
+
+
+## Possíveis Melhorias
+
+**Obter Probabilidades**: Atualmente, a API do MLflow retorna apenas previsões binárias. Uma melhoria seria ajustar o modelo servido para retornar as probabilidades (predict_proba) e usá-las para colorir o gráfico com um gradiente.
+
+**Balanceamento de Classes**: Se o modelo prever apenas uma classe (ex.: todos 0), pode ser necessário balancear o conjunto de dados ou ajustar os pesos das classes no treinamento.
+
+**Mais Features**: Adicionar novas features (ex.: interações entre lat e lon, ou shot_distance ao quadrado) pode melhorar o desempenho do modelo.
+
+**Modelos Mais Complexos**: Testar modelos mais avançados, como Random Forest ou Gradient Boosting, pode capturar melhor os padrões nos dados.
+
+
+Sinta-se à vontade para usar, modificar e distribuir o código conforme necessário.
