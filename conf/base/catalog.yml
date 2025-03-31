@@ -1,0 +1,129 @@
+# Arquivo catalog.yml atualizado
+
+#data shots dev
+data_shots:
+  type: pandas.ParquetDataset
+  filepath: data/01_raw/data_shots.parquet
+
+data_shots_not_null:
+  type: pandas.ParquetDataset
+  filepath: data/02_intermediate/data_shots_not_null.parquet
+
+data_shots_normalized:
+  type: pandas.ParquetDataset
+  filepath: data/03_primary/data_shots_normalized.parquet
+
+data_features:
+  type: pandas.ParquetDataset
+  filepath: data/04_feature/data_features.parquet
+
+
+#data shots prod
+data_shots_prod:
+  type: pandas.ParquetDataset
+  filepath: data/01_raw/dataset_kobe_prod.parquet
+
+data_shots_prod_not_null:
+  type: pandas.ParquetDataset
+  filepath: data/02_intermediate/data_shots_prod_not_null.parquet
+
+data_shots_prod_normalized:
+  type: pandas.ParquetDataset
+  filepath: data/03_primary/data_shots_prod_normalized.parquet
+
+data_features_prod:
+  type: pandas.ParquetDataset
+  filepath: data/04_feature/data_features_prod.parquet
+
+
+
+shots_train:
+  type: pandas.ParquetDataset
+  filepath: data/05_model_input/shots_train.parquet
+
+shots_test:
+  type: pandas.ParquetDataset
+  filepath: data/05_model_input/shots_test.parquet
+
+
+#Salvar localmente .pickle
+
+lr_tuned:
+  type: pickle.PickleDataset
+  filepath: data/06_models/lr_tuned.pickle
+dt_tuned:
+  type: pickle.PickleDataset
+  filepath: data/06_models/dt_tuned.pickle
+ 
+
+#lr_tuned:
+#  type: kedro_mlflow.io.models.MlflowModelTrackingDataset
+#  flavor: mlflow.sklearn 
+#  save_args:
+#    registered_model_name: pd_kobe_lr_model
+#
+#dt_tuned:
+#  type: kedro_mlflow.io.models.MlflowModelTrackingDataset
+#  flavor: mlflow.sklearn 
+#  save_args:
+#    registered_model_name: pd_kobe_dt_model  
+
+
+## MÉTRICAS DE LR TRAIN 
+metrics_lr_train:
+  type: kedro_datasets.pandas.CSVDataset
+  filepath: data/07_model_output/metrics_lr_train.csv
+
+predictions_lr_train:
+  type: kedro_datasets.pandas.CSVDataset
+  filepath: data/07_model_output/predictions_train_lr.csv
+ 
+predicted_probabilities_lr_train:
+  type: kedro_datasets.pandas.CSVDataset
+  filepath: data/07_model_output/predicted_probabilities_lr_train.csv
+
+## MÉTRICAS DE LR TEST
+metrics_lr_test:
+  type: kedro_datasets.pandas.CSVDataset
+  filepath: data/07_model_output/metrics_lr_test.csv
+
+predictions_lr_test:
+  type: kedro_datasets.pandas.CSVDataset
+  filepath: data/07_model_output/predictions_lr_test.csv
+ 
+predicted_probabilities_lr_test:
+  type: kedro_datasets.pandas.CSVDataset
+  filepath: data/07_model_output/predicted_probabilities_lr_test.csv
+
+## MÉTRICAS DE DT TRAIN
+metrics_dt_train:
+  type: kedro_datasets.pandas.CSVDataset
+  filepath: data/07_model_output/metrics_dt_train.csv
+
+predictions_dt_train:
+  type: kedro_datasets.pandas.CSVDataset
+  filepath: data/07_model_output/predictions_dt_train.csv
+
+predicted_probabilities_dt_train:
+  type: kedro_datasets.pandas.CSVDataset
+  filepath: data/07_model_output/predicted_probabilities_dt_train.csv
+
+  ## MÉTRICAS DE DT TEST
+metrics_dt_test:
+  type: kedro_datasets.pandas.CSVDataset
+  filepath: data/07_model_output/metrics_dt_test.csv
+
+predictions_dt_test:
+  type: kedro_datasets.pandas.CSVDataset
+  filepath: data/07_model_output/predictions_dt_test.csv
+
+predicted_probabilities_dt_test:
+  type: kedro_datasets.pandas.CSVDataset
+  filepath: data/07_model_output/predicted_probabilities_dt_test.csv
+
+
+## RESULTADO PREDIÇÕES API MLFLOW
+
+predictions:
+  type: pandas.CSVDataset
+  filepath: data/07_model_output/predictions.csv

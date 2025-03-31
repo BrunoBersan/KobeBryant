@@ -1,0 +1,7 @@
+session_id: 54321
+data_shots_train_str: 'train'
+data_shots_test_str: 'test'
+
+run_id: "3fe7185d9f2346e08862c44784937dfb"
+model_name: "logistic_regression_model" 
+plot_output_path: "data/08_reporting/shot_predictions.png"

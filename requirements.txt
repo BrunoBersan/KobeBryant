@@ -1,0 +1,9 @@
+ipython>=8.10
+jupyterlab>=3.0
+kedro~=0.19.12
+notebook
+pyarrow
+pycaret[models,mlops]
+scikit-optimize>=0.9.0 
+matplotlib
+seaborn 
