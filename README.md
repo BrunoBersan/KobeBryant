@@ -13,32 +13,31 @@ O conjunto de dados utilizado contém características como a localização do a
 O projeto é organizado utilizando o framework **Kedro**, que garante um pipeline de dados modular e reprodutível. Abaixo está a estrutura do projeto:
 
 pd-kobe/
-├── conf/                    # Arquivos de configuração (configurações do Kedro, parâmetros, catálogo)
-├── data/                    # Diretórios de dados (brutos, processados, saídas de modelo, etc.)
-│   ├── 01_raw/              # Conjunto de dados bruto
-│   ├── 02_intermediate/     # Dados intermediários
-│   ├── 03_primary/          # Dados primários
-│   ├── 04_feature/          # Dados com engenharia de features
-│   ├── 05_model_input/      # Dados prontos para o modelo
-│   ├── 06_models/           # Modelos treinados
-│   ├── 07_model_output/     # Saídas do modelo (previsões)
-│   ├── 08_reporting/        # Visualizações e relatórios (gráficos)
-├── src/                     # Código-fonte do projeto
-│   ├── pd_kobe/             # Módulo principal do projeto
-│   │   ├── pipelines/       # Pipelines do Kedro
+├── conf/                           # Arquivos de configuração (configurações do Kedro, parâmetros, catálogo)
+├── data/                           # Diretórios de dados (brutos, processados, saídas de modelo, etc.)
+│   ├── 01_raw/                     # Conjunto de dados bruto
+│   ├── 02_intermediate/            # Dados intermediários
+│   ├── 03_primary/                 # Dados primários
+│   ├── 04_feature/                 # Dados com engenharia de features
+│   ├── 05_model_input/             # Dados prontos para o modelo
+│   ├── 06_models/                  # Modelos treinados
+│   ├── 07_model_output/            # Saídas do modelo (previsões)
+│   ├── 08_reporting/               # Visualizações e relatórios (gráficos)
+├── src/                            # Código-fonte do projeto
+│   ├── pd_kobe/                    # Módulo principal do projeto
+│   │   ├── pipelines/              # Pipelines do Kedro
 │   │   │   ├── data_preparation/   # Pipeline de pré-processamento
 │   │   │   ├── data_processing/    # Pipeline de seleção e engenharia de features
-│   │   │   ├── model_trainig/      # Pipeline de treinamento de modelos
-│   │   │   ├── model_predicts/     # Pipeline resultados e previsões dos modelos treinados
-│   │   │   ├── reporting/          # Gráficos e métricas visuais
+│   │   │   ├── model_training/     # Pipeline de treinamento de modelos
+│   │   │   ├── model_predicts/     # Pipeline de resultados e previsões dos modelos treinados
+│   │   │   ├── reporting/          # Pipeline de gráficos e métricas visuais
 │   │   │   └── nodes.py            # Funções dos nós do pipeline
-│   │   ├── settings.py         # Configurações do projeto
-│   │   └── init.py             # Arquivo de inicialização
-├── mlruns/                  # Diretório do MLflow para rastreamento de experimentos
-├── predict.py               # Script para previsões manuais (opcional)
-├── requirements.txt         # Dependências do projeto
-└── README.md                # Documentação do projeto
-
+│   │   ├── settings.py             # Configurações do projeto
+│   │   └── __init__.py             # Arquivo de inicialização
+├── mlruns/                         # Diretório do MLflow para rastreamento de experimentos
+├── predict.py                      # Script para previsões manuais (opcional)
+├── requirements.txt                # Dependências do projeto
+└── README.md                       # Documentação do projeto
 ---
 
 ## Funcionalidades Principais
