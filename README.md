@@ -42,12 +42,7 @@ pd-kobe/
 └── README.md                       # Documentação do projeto
 
 ```
----
-
-## Diagrama de Pipelines e Fluxos
-
-![Texto Alternativo](docs/diagrama_fluxo.png)
-
+--- 
 
 ## Funcionalidades Principais
 
@@ -111,6 +106,11 @@ pip install -r requirements.txt
     2. Treinar os modelos (Regressão Logística e Árvore de Decisão).
     3. Fazer previsões dos modelos localmente e também usando a API do MLflow.
     4. Gerar o gráfico de dispersão, curva, roc, métricas e mais.
+
+
+## Diagrama de Pipelines e Fluxos
+
+![Texto Alternativo](docs/diagrama_fluxo.png)
 
 
 ## Detalhes dos Pipelines
