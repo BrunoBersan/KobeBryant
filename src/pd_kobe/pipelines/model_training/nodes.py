@@ -1,5 +1,6 @@
 import pandas as pd
 from pycaret.classification import *
+from sklearn.metrics import log_loss
 from skopt.space import Real, Categorical, Integer
 import mlflow
 
@@ -50,6 +51,15 @@ def logistic_regression_model(train_features: pd.DataFrame, session_id) -> dict:
             verbose=False
         )
 
+        # Obter as probabilidades preditas
+        X_test = train_features.drop(columns=['shot_made_flag'])  
+        y_test = train_features['shot_made_flag']
+        
+        y_pred_proba = tuned_lr.predict_proba(X_test)[:, 1] 
+
+        # Calcular o Log Loss
+        logloss = log_loss(y_test, y_pred_proba)
+
         metrics = metrics = exp.pull() 
        # Criar dicionário de métricas
         metrics_dict = {
@@ -59,7 +69,8 @@ def logistic_regression_model(train_features: pd.DataFrame, session_id) -> dict:
             "f1_score": metrics.iloc[0]["F1"],
             "roc_auc": metrics.iloc[0]["AUC"], 
             "kappa": metrics.iloc[0]["Kappa"],
-            "mcc": metrics.iloc[0]["MCC"]            
+            "mcc": metrics.iloc[0]["MCC"],
+            "logloss" : logloss          
         }
 
         mlflow.log_metric("accuracy", metrics_dict['accuracy'])
@@ -69,6 +80,7 @@ def logistic_regression_model(train_features: pd.DataFrame, session_id) -> dict:
         mlflow.log_metric("roc_auc", metrics_dict['roc_auc'])
         mlflow.log_metric("kappa", metrics_dict['kappa'])
         mlflow.log_metric("mcc", metrics_dict['mcc'])
+        mlflow.log_metric("logloss", metrics_dict['logloss'])
 
         mlflow.sklearn.log_model(tuned_lr, "logistic_regression_model")
 
@@ -105,6 +117,15 @@ def decision_tree_model(train_features: pd.DataFrame, session_id) -> dict:
             custom_grid=dt_search_space
         ) 
 
+        # Obter as probabilidades preditas
+        X_test = train_features.drop(columns=['shot_made_flag'])  
+        y_test = train_features['shot_made_flag']
+        
+        y_pred_proba = tuned_dt.predict_proba(X_test)[:, 1] 
+
+        # Calcular o Log Loss
+        logloss = log_loss(y_test, y_pred_proba)
+
         metrics = metrics = exp.pull() 
        # Criar dicionário de métricas
         metrics_dict = {
@@ -112,9 +133,10 @@ def decision_tree_model(train_features: pd.DataFrame, session_id) -> dict:
             "precision": metrics.iloc[0]["Prec."],
             "recall": metrics.iloc[0]["Recall"],
             "f1_score": metrics.iloc[0]["F1"],
-            "roc_auc": metrics.iloc[0]["AUC"],
+            "roc_auc": metrics.iloc[0]["AUC"], 
             "kappa": metrics.iloc[0]["Kappa"],
-            "mcc": metrics.iloc[0]["MCC"]
+            "mcc": metrics.iloc[0]["MCC"],
+            "logloss" : logloss          
         }
 
         mlflow.log_metric("accuracy", metrics_dict['accuracy'])
@@ -124,6 +146,7 @@ def decision_tree_model(train_features: pd.DataFrame, session_id) -> dict:
         mlflow.log_metric("roc_auc", metrics_dict['roc_auc'])
         mlflow.log_metric("kappa", metrics_dict['kappa'])
         mlflow.log_metric("mcc", metrics_dict['mcc'])
+        mlflow.log_metric("logloss", metrics_dict['logloss'])
 
         mlflow.sklearn.log_model(tuned_dt, "decision_tree_model")
 
