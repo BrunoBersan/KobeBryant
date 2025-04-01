@@ -1,1 +1,0 @@
-Integer(low=10, high=50, prior='uniform', transform='identity')
