@@ -47,7 +47,8 @@ pd-kobe/
 ## Funcionalidades Principais
 
 1. **Pré-processamento de Dados**:
-   - 
+   - Foram fornecidas bases de dados de produção e desenvolvimento para treinamento e validação do modelo.
+   - Aplicamos algumas regras e validações como tratamento de nulos e remoção de duplicatas
 
 2. **Treinamento de Modelos**:
    - Dois modelos são treinados: Regressão Logística (`logistic_regression_model`) e Árvore de Decisão (`decision_tree_model`).
@@ -55,7 +56,7 @@ pd-kobe/
    - O MLflow rastreia os experimentos, logando métricas e os modelos treinados.
 
 3. **Previsão via API**:
-   - O modelo treinado é servido via MLflow usando o comando `mlflow models serve`.
+   - Os modelos treinados são servidos via MLflow
    - Um nó do pipeline (`serve_and_predict`) automatiza o processo de subir o servidor do MLflow, fazer a requisição à API (`/invocations`) e desligar o servidor.
    - As previsões são salvas em `data/07_model_output/predictions.csv`.
 
@@ -171,11 +172,16 @@ Esses gráficos são salvos no diretório data/08_reporting/ com nomes que indic
 **Gráfico de Dispersão**: O gráfico mostra os locais dos arremessos com bolinhas verdes (acertos) e vermelhas (erros), facilitando a análise visual das previsões.
 
 
+## Problemas
+
+**Diferença nos dados de produção**: Os dados fornecidos para treinamento do modelo continham apenas shots realizados de dentro do garrafão, ou seja, shots de 2 pnts. A base de produção foi fornecida apenas com shots realizados de fora do garrafão. Por conta disso, tivemos um modelo que não foi capaz de prever os acertos de produção, classificando tudo como erro. 
+
+
 ## Possíveis Melhorias
 
 **Obter Probabilidades**: Atualmente, a API do MLflow retorna apenas previsões binárias. Uma melhoria seria ajustar o modelo servido para retornar as probabilidades (predict_proba) e usá-las para colorir o gráfico com um gradiente.
 
-**Balanceamento de Classes**: Se o modelo prever apenas uma classe (ex.: todos 0), pode ser necessário balancear o conjunto de dados ou ajustar os pesos das classes no treinamento.
+**Balanceamento de Classes**: Precisariamos de mais dados de fora do garrafão no treinamento do modelo para melhorar as métricas e conseguir prever outros tipos de arremessos também.
 
 **Mais Features**: Adicionar novas features (ex.: interações entre lat e lon, ou shot_distance ao quadrado) pode melhorar o desempenho do modelo.
 
