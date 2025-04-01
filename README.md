@@ -44,6 +44,11 @@ pd-kobe/
 ```
 ---
 
+## Diagrama de Pipelines e Fluxos
+
+![Texto Alternativo](docs/diagrama_fluxo.png)
+
+
 ## Funcionalidades Principais
 
 1. **Pré-processamento de Dados**:
