@@ -124,6 +124,10 @@ predicted_probabilities_dt_test:
 
 ## RESULTADO PREDIÇÕES API MLFLOW
 
-predictions:
+predictions_lr:
   type: pandas.CSVDataset
-  filepath: data/07_model_output/predictions.csv
+  filepath: data/07_model_output/predictions_lr.csv
+
+predictions_dt:
+  type: pandas.CSVDataset
+  filepath: data/07_model_output/predictions_dt.csv

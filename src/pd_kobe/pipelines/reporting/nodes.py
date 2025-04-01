@@ -96,7 +96,7 @@ def get_model_short_name(model):
     # Retorna a sigla correspondente ou o nome completo se não encontrado
     return model_name_map.get(full_model_name, full_model_name)
 
-def serve_and_predict(data: pd.DataFrame, run_id: str, model_name: str, port: int = 5001) -> pd.DataFrame:
+def serve_and_predict(data: pd.DataFrame,model_name, port: int = 5001) -> pd.DataFrame:
     """
     Sobe o servidor do MLflow, faz a requisição pra API e retorna as previsões como DataFrame.
     
@@ -135,7 +135,7 @@ def serve_and_predict(data: pd.DataFrame, run_id: str, model_name: str, port: in
     # Montar o comando pra subir o servidor do MLflow
     mlflow_command = [
         "mlflow", "models", "serve",
-        "-m", f"runs:/{run_id}/{model_name}",
+        "-m", f"models:/{model_name}/latest",  # Usa a versão mais recente do modelo
         "-p", str(port),
         "--env-manager", "conda"
     ]

@@ -70,7 +70,7 @@ pd-kobe/
 
 Para executar o projeto, você precisa ter as seguintes ferramentas instaladas:
 
-- **Python 3.8+**
+- **Python 3.11**
 - **Conda** (para gerenciamento de ambientes)
 - **Kedro 0.19.12**
 - **MLflow**
@@ -89,7 +89,7 @@ pip install -r requirements.txt
 
 1. **Configurar o ambiente**
     - Crie e ative um ambiente Conda para o projeto:
-        conda create -n kedro_env python=3.8
+        conda create -n kedro_env python=3.11
         conda activate kedro_env
         pip install -r requirements.txt
 

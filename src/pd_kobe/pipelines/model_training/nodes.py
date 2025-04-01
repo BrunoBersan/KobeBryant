@@ -49,8 +49,27 @@ def logistic_regression_model(train_features: pd.DataFrame, session_id) -> dict:
             early_stopping_max_iters=10,
             verbose=False
         )
-        f1_score = exp.pull().iloc[0]["F1"]
-        mlflow.log_metric("F1 Score", f1_score)
+
+        metrics = metrics = exp.pull() 
+       # Criar dicionário de métricas
+        metrics_dict = {
+            "accuracy": metrics.iloc[0]["Accuracy"],
+            "precision": metrics.iloc[0]["Prec."],
+            "recall": metrics.iloc[0]["Recall"],
+            "f1_score": metrics.iloc[0]["F1"],
+            "roc_auc": metrics.iloc[0]["AUC"], 
+            "kappa": metrics.iloc[0]["Kappa"],
+            "mcc": metrics.iloc[0]["MCC"]            
+        }
+
+        mlflow.log_metric("accuracy", metrics_dict['accuracy'])
+        mlflow.log_metric("precision", metrics_dict['precision'])
+        mlflow.log_metric("recall", metrics_dict['recall'])
+        mlflow.log_metric("f1_score", metrics_dict['f1_score'])
+        mlflow.log_metric("roc_auc", metrics_dict['roc_auc'])
+        mlflow.log_metric("kappa", metrics_dict['kappa'])
+        mlflow.log_metric("mcc", metrics_dict['mcc'])
+
         mlflow.sklearn.log_model(tuned_lr, "logistic_regression_model")
 
     return tuned_lr
@@ -84,9 +103,28 @@ def decision_tree_model(train_features: pd.DataFrame, session_id) -> dict:
             early_stopping=True,
             early_stopping_max_iters=10,
             custom_grid=dt_search_space
-        )
-        f1_score = exp.pull().iloc[0]["F1"]
-        mlflow.log_metric("F1 Score", f1_score)
+        ) 
+
+        metrics = metrics = exp.pull() 
+       # Criar dicionário de métricas
+        metrics_dict = {
+            "accuracy": metrics.iloc[0]["Accuracy"],
+            "precision": metrics.iloc[0]["Prec."],
+            "recall": metrics.iloc[0]["Recall"],
+            "f1_score": metrics.iloc[0]["F1"],
+            "roc_auc": metrics.iloc[0]["AUC"],
+            "kappa": metrics.iloc[0]["Kappa"],
+            "mcc": metrics.iloc[0]["MCC"]
+        }
+
+        mlflow.log_metric("accuracy", metrics_dict['accuracy'])
+        mlflow.log_metric("precision", metrics_dict['precision'])
+        mlflow.log_metric("recall", metrics_dict['recall'])
+        mlflow.log_metric("f1_score", metrics_dict['f1_score'])
+        mlflow.log_metric("roc_auc", metrics_dict['roc_auc'])
+        mlflow.log_metric("kappa", metrics_dict['kappa'])
+        mlflow.log_metric("mcc", metrics_dict['mcc'])
+
         mlflow.sklearn.log_model(tuned_dt, "decision_tree_model")
 
     return tuned_dt 

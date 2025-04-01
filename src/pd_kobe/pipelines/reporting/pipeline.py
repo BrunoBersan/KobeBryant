@@ -27,16 +27,31 @@ def create_pipeline(**kwargs) -> Pipeline:
         generate_node('metrics_lr_test','shots_test','predicted_probabilities_lr_test','predictions_lr_test', 'lr_tuned', 'params:data_shots_test_str','save_model_plots_metrics_LR_test'),
         generate_node('metrics_dt_test','shots_test','predicted_probabilities_dt_test','predictions_dt_test', 'dt_tuned', 'params:data_shots_test_str','save_model_plots_metrics_DT_test'),
         
+        ## SERVE E VALIDA REGRESSÃO LOGISTICA
         node(
             func=serve_and_predict,
-            inputs=['data_features_prod', 'params:run_id', 'params:model_name'],
-            outputs='predictions',
-            name="serve_and_predict_node"
+            inputs=['data_features_prod','params:model_name_lr'],
+            outputs='predictions_rl',
+            name="serve_and_predict_node_lr"
         ),
         node(
             func=plot_shot_predictions,
-            inputs=['data_features_prod', 'predictions', 'params:plot_output_path'],
+            inputs=['data_features_prod', 'predictions_rl', 'params:plot_output_path_lr'],
             outputs=None,
-            name="plot_shot_predictions_node"
+            name="plot_shot_predictions_node_lr"
+        ),
+
+        ## SERVE E VALIDA ARVORE DE DECISÃO
+        node(
+            func=serve_and_predict,
+            inputs=['data_features_prod', 'params:model_name_dt'],
+            outputs='predictions_dt',
+            name="serve_and_predict_node_dt"
+        ),
+        node(
+            func=plot_shot_predictions,
+            inputs=['data_features_prod', 'predictions_dt', 'params:plot_output_path_dt'],
+            outputs=None,
+            name="plot_shot_predictions_node_dt"
         )
     ])
