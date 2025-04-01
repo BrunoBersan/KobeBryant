@@ -16,7 +16,7 @@ def calculate_model_metrics(features: pd.DataFrame, session_id, model, str):
     
     # Fazer previsões
     y_pred = model.predict(X_test)
-    y_proba = model.predict_proba(X_test)[:, 1]  # Probabilidade positiva para curva ROC
+    y_proba = model.predict_proba(X_test)[:, 1] 
     
     # Calcular métricas
     accuracy = accuracy_score(y_test, y_pred)

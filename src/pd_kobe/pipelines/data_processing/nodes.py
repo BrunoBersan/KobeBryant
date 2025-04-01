@@ -2,11 +2,7 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 
 def analyze_and_select_features(data: pd.DataFrame) -> pd.DataFrame:  
-    """Análise e seleção das features.
-    
-    Codifica as variáveis categóricas utilizando pd.get_dummies, 
-    removendo a primeira coluna para evitar multicolinearidade, 
-    e exclui as colunas originais que foram codificadas.
+    """Análise e seleção das features.    
     """    
 
     features = data[[ 'lat', 'lon', 'minutes_remaining', 'period',

@@ -96,7 +96,7 @@ pip install -r requirements.txt
 
 2. **Configurar o MLflow**
     - Defina o URI de rastreamento do MLflow (já configurado no projeto):
-        export MLFLOW_TRACKING_URI=file:///C:/Projetos/especializacao_ia/segundo_modulo/pd-kobe/mlruns
+        export MLFLOW_TRACKING_URI=file:///**DIRETÓRIO DO PROJETO
 
 3. **Executar o Pipeline**
     - kedro run
