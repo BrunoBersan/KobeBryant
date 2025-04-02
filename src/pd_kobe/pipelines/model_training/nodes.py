@@ -16,8 +16,31 @@ def configure_pycaret_setup(train_features: pd.DataFrame, session_id) -> Classif
     )
     return exp
 
+def register_model_with_mlflow(model, model_name, run_metrics):
+    """Função auxiliar para registrar o modelo e suas métricas"""
+    # Log do modelo como artefato
+    mlflow.sklearn.log_model(model, artifact_path=model_name)
+    
+    # Registrar o modelo no Model Registry
+    run_id = mlflow.active_run().info.run_id
+    model_uri = f"runs:/{run_id}/{model_name}"
+    
+    try:
+        registered_model = mlflow.register_model(model_uri, model_name)
+        print(f"Modelo '{model_name}' registrado com versão {registered_model.version}")
+    except Exception as e:
+        print(f"Erro ao registrar modelo: {e}")
+        # Se o modelo já existe, cria uma nova versão
+        client = mlflow.tracking.MlflowClient()
+        client.create_model_version(model_name, model_uri, run_id)
+    
+    # Log das métricas
+    for metric_name, metric_value in run_metrics.items():
+        mlflow.log_metric(metric_name, metric_value)
+
 def logistic_regression_model(train_features: pd.DataFrame, session_id) -> dict:
     # Definir o tracking URI (ajuste conforme sua preferência)
+    
     mlflow.set_tracking_uri("file:///C:/Projetos/especializacao_ia/segundo_modulo/pd-kobe/mlruns")
     while mlflow.active_run():
         mlflow.end_run()
@@ -25,17 +48,9 @@ def logistic_regression_model(train_features: pd.DataFrame, session_id) -> dict:
     exp = configure_pycaret_setup(train_features, session_id)
     with mlflow.start_run(run_name="logistic_regression", nested=True):  # Usar execução aninhada
         lr = exp.create_model('lr', verbose=False)
-        lr_search_space = {
-            'penalty': Categorical(['l1', 'l2', 'elasticnet']),
-            'C': Real(0.001, 100, prior='log-uniform'),
-            'class_weight': Categorical(['balanced', None]),
-            'max_iter': Integer(100, 1000),
-            'tol': Real(1e-4, 1e-2, prior='log-uniform'),
-            'solver': Categorical(['liblinear', 'saga']),
-        }
-        if 'elasticnet' in lr_search_space['penalty'].categories:
-            lr_search_space['l1_ratio'] = Real(0.1, 0.9)
-            lr_search_space['solver'] = Categorical(['saga'])
+        lr_search_space = { 
+            'class_weight': Categorical(['balanced', None]), 
+        } 
 
         mlflow.log_params(lr_search_space)
         tuned_lr = exp.tune_model(
@@ -80,9 +95,14 @@ def logistic_regression_model(train_features: pd.DataFrame, session_id) -> dict:
         mlflow.log_metric("roc_auc", metrics_dict['roc_auc'])
         mlflow.log_metric("kappa", metrics_dict['kappa'])
         mlflow.log_metric("mcc", metrics_dict['mcc'])
-        mlflow.log_metric("logloss", metrics_dict['logloss'])
+        mlflow.log_metric("logloss", metrics_dict['logloss']) 
 
-        mlflow.sklearn.log_model(tuned_lr, "logistic_regression_model")
+        register_model_with_mlflow(
+            model=tuned_lr,
+            model_name="logistic_regression_model",
+            run_metrics=metrics_dict
+        )
+
 
     return tuned_lr
 
@@ -95,15 +115,8 @@ def decision_tree_model(train_features: pd.DataFrame, session_id) -> dict:
     exp = configure_pycaret_setup(train_features, session_id)
     with mlflow.start_run(run_name="decision_tree", nested=True):  # Usar execução aninhada
         dt = exp.create_model('dt', verbose=False)
-        dt_search_space = {
-            'criterion': Categorical(['gini', 'entropy']),
-            'splitter': Categorical(['best']),
-            'max_depth': Integer(3, 20),
-            'min_samples_split': Integer(2, 10),
-            'min_samples_leaf': Integer(1, 5),
-            'max_features': Categorical(['sqrt', 'log2', 0.5]),
-            'ccp_alpha': Real(0.0, 0.1),
-            'max_leaf_nodes': Integer(10, 50),
+        dt_search_space = { 
+            'splitter': Categorical(['best']), 
         }
         mlflow.log_params(dt_search_space)
         tuned_dt = exp.tune_model(
@@ -148,6 +161,10 @@ def decision_tree_model(train_features: pd.DataFrame, session_id) -> dict:
         mlflow.log_metric("mcc", metrics_dict['mcc'])
         mlflow.log_metric("logloss", metrics_dict['logloss'])
 
-        mlflow.sklearn.log_model(tuned_dt, "decision_tree_model")
+        register_model_with_mlflow(
+            model=tuned_dt,
+            model_name="decision_tree_model",
+            run_metrics=metrics_dict
+        )
 
     return tuned_dt 

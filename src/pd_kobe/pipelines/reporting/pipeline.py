@@ -31,12 +31,12 @@ def create_pipeline(**kwargs) -> Pipeline:
         node(
             func=serve_and_predict,
             inputs=['data_features_prod','params:model_name_lr'],
-            outputs='predictions_rl',
+            outputs='predictions_prod_lr',
             name="serve_and_predict_node_lr"
         ),
         node(
             func=plot_shot_predictions,
-            inputs=['data_features_prod', 'predictions_rl', 'params:plot_output_path_lr'],
+            inputs=['data_features_prod', 'predictions_prod_lr', 'params:plot_output_path_lr'],
             outputs=None,
             name="plot_shot_predictions_node_lr"
         ),
@@ -45,12 +45,12 @@ def create_pipeline(**kwargs) -> Pipeline:
         node(
             func=serve_and_predict,
             inputs=['data_features_prod', 'params:model_name_dt'],
-            outputs='predictions_dt',
+            outputs='predictions_prod_dt',
             name="serve_and_predict_node_dt"
         ),
         node(
             func=plot_shot_predictions,
-            inputs=['data_features_prod', 'predictions_dt', 'params:plot_output_path_dt'],
+            inputs=['data_features_prod', 'predictions_prod_dt', 'params:plot_output_path_dt'],
             outputs=None,
             name="plot_shot_predictions_node_dt"
         )

@@ -99,15 +99,6 @@ def get_model_short_name(model):
 def serve_and_predict(data: pd.DataFrame,model_name, port: int = 5001) -> pd.DataFrame:
     """
     Sobe o servidor do MLflow, faz a requisição pra API e retorna as previsões como DataFrame.
-    
-    Args:
-        data: DataFrame com os dados de produção (data_features_prod_processed)
-        run_id: ID do run do MLflow onde o modelo foi logado
-        model_name: Nome do modelo no MLflow (ex.: 'logistic_regression_model')
-        port: Porta onde o servidor do MLflow vai rodar
-    
-    Returns:
-        DataFrame com a coluna 'shot_made_flag_pred' contendo as previsões
     """
     # Remover a shot_made_flag (se estiver presente)
     if 'shot_made_flag' in data.columns:
@@ -205,14 +196,6 @@ def plot_shot_predictions(data: pd.DataFrame, predictions: pd.DataFrame, output_
     """
     Gera um gráfico de dispersão mostrando os locais dos arremessos e as previsões.
     Usa bolinhas verdes pra acertos (1) e vermelhas pra erros (0).
-    
-    Args:
-        data: DataFrame com os dados de produção (data_features_prod_processed)
-        predictions: DataFrame com as previsões (shot_made_flag_pred)
-        output_path: Caminho onde o gráfico será salvo (ex.: 'data/08_reporting/shot_predictions.png')
-    
-    Returns:
-        None
     """
     # Verificar se lat e lon estão no dataset
     if 'lat' not in data.columns or 'lon' not in data.columns:
