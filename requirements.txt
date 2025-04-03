@@ -3,8 +3,9 @@ jupyterlab>=3.0
 kedro~=0.19.12
 notebook
 pyarrow
-pycaret[models,mlops]
+pycaret[models,mlops, tuners]
 scikit-optimize>=0.9.0 
 matplotlib
 seaborn 
 streamlit
+kedro-datasets[pandas]

@@ -12,7 +12,7 @@ def configure_pycaret_setup(train_features: pd.DataFrame, session_id) -> Classif
         target='shot_made_flag',
         n_jobs=-1,
         use_gpu=True,
-        session_id=session_id
+        session_id=session_id,        
     )
     return exp
 
@@ -48,6 +48,7 @@ def logistic_regression_model(train_features: pd.DataFrame, session_id) -> dict:
     exp = configure_pycaret_setup(train_features, session_id)
     with mlflow.start_run(run_name="logistic_regression", nested=True):  # Usar execução aninhada
         lr = exp.create_model('lr', verbose=False)
+
         lr_search_space = { 
             'class_weight': Categorical(['balanced', None]), 
         } 
@@ -66,6 +67,7 @@ def logistic_regression_model(train_features: pd.DataFrame, session_id) -> dict:
             verbose=False
         )
 
+
         # Obter as probabilidades preditas
         X_test = train_features.drop(columns=['shot_made_flag'])  
         y_test = train_features['shot_made_flag']
@@ -75,7 +77,7 @@ def logistic_regression_model(train_features: pd.DataFrame, session_id) -> dict:
         # Calcular o Log Loss
         logloss = log_loss(y_test, y_pred_proba)
 
-        metrics = metrics = exp.pull() 
+        metrics  = exp.pull() 
        # Criar dicionário de métricas
         metrics_dict = {
             "accuracy": metrics.iloc[0]["Accuracy"],
@@ -115,6 +117,7 @@ def decision_tree_model(train_features: pd.DataFrame, session_id) -> dict:
     exp = configure_pycaret_setup(train_features, session_id)
     with mlflow.start_run(run_name="decision_tree", nested=True):  # Usar execução aninhada
         dt = exp.create_model('dt', verbose=False)
+
         dt_search_space = { 
             'splitter': Categorical(['best']), 
         }

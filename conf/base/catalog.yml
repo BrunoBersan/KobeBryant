@@ -54,20 +54,7 @@ lr_tuned:
 dt_tuned:
   type: pickle.PickleDataset
   filepath: data/06_models/dt_tuned.pickle
- 
-
-#lr_tuned:
-#  type: kedro_mlflow.io.models.MlflowModelTrackingDataset
-#  flavor: mlflow.sklearn 
-#  save_args:
-#    registered_model_name: pd_kobe_lr_model
-#
-#dt_tuned:
-#  type: kedro_mlflow.io.models.MlflowModelTrackingDataset
-#  flavor: mlflow.sklearn 
-#  save_args:
-#    registered_model_name: pd_kobe_dt_model  
-
+  
 
 ## MÉTRICAS DE LR TRAIN 
 metrics_lr_train:
@@ -123,10 +110,34 @@ predicted_probabilities_dt_test:
 
 
 ## RESULTADO PREDIÇÕES API MLFLOW
+
+#REGRESSÃO LOGISTICA
 predictions_prod_lr:
   type: pandas.CSVDataset
   filepath: data/07_model_output/predictions_prod_lr.csv
 
+predictions_proba_prod_lr:
+  type: pandas.CSVDataset
+  filepath: data/07_model_output/predictions_proba_prod_lr.csv
+
+metrics_prod_lr:
+  type: pandas.CSVDataset
+  filepath: data/07_model_output/metrics_prod_lr.csv
+
+
+
+#ÁRVORE DE DECISÃO
+
 predictions_prod_dt:
   type: pandas.CSVDataset
-  filepath: data/07_model_output/predictions_prod_lr.csv
+  filepath: data/07_model_output/predictions_prod_dt.csv
+
+predictions_proba_prod_dt:
+  type: pandas.CSVDataset
+  filepath: data/07_model_output/predictions_proba_prod_dt.csv
+
+metrics_prod_dt:
+  type: pandas.CSVDataset
+  filepath: data/07_model_output/metrics_prod_dt.csv  
+
+ 
