@@ -329,4 +329,24 @@ Análise de drift nas features: Testes estatísticos como Kolmogorov-Smirnov (KS
  - Monitoramento de impacto no negócio: Se o modelo influencia indicadores de negócio (exemplo: taxa de conversão, número de vendas), podemos acompanhar se esses indicadores se comportam conforme esperado.
 
 
+## Estratégias de Retreinamento de Modelos em Produção ## 
+
+ **1. Estratégia Reativa (Baseada no Desempenho)**
+   O modelo é reavaliado periodicamente, e o retreinamento ocorre somente quando há queda no desempenho.
+   Exemplo: Se a acurácia ou F1-score cair abaixo de um limite definido, o modelo é atualizado.
+
+   **Vantagens**: Evita retreinamentos desnecessários, gerando economia de recursos computacionais.
+
+   **Desvantagens**: Pode levar a atrasos na adaptação a novas tendências nos dados.
+
+**2. Estratégia Preditiva (Baseada nos Dados)**
+O retreinamento ocorre antes da degradação do modelo, com base em mudanças estatísticas nos dados.
+Técnicas como detecção de drift (mudança na distribuição dos dados) são usadas para prever quando o modelo precisa ser atualizado.
+Exemplo: Monitoramento da distribuição das variáveis de entrada para detectar mudanças significativas.
+
+**Vantagens**: Mantém o modelo atualizado de forma proativa, reduzindo riscos de erros.
+
+**Desvantagens**: Pode exigir mais poder computacional e monitoramento contínuo.
+
+
 ### Sinta-se à vontade para usar, modificar e distribuir o código conforme necessário. ###
