@@ -292,7 +292,7 @@ Monitorar a saúde de um modelo em produção é essencial para garantir que ele
  - Sem disponibilidade da variável resposta no ambiente de produção
 
 
-### Cenário COM a variável resposta disponível ###
+#### Cenário COM a variável resposta disponível ####
 Se for possível coletar os valores reais da variável alvo (y_real), podemos comparar as previsões do modelo (y_pred) com os valores reais para avaliar diretamente a performance do modelo.
 
 **Métricas de desempenho**
@@ -308,7 +308,7 @@ Curva ROC e AUC: Mede a separabilidade entre classes
  - Detecção de conceito derivante (Concept Drift): O modelo pode perder precisão com o tempo se os padrões dos dados mudarem. Técnicas como Kolmogorov-Smirnov Test e Jensen-Shannon Divergence podem ser usadas para detectar drifts.
  - Retraining Automático: Se o modelo perder performance, ele pode ser re-treinado com novos dados.
 
-### Cenário SEM a variável resposta disponível ### 
+#### Cenário SEM a variável resposta disponível #### 
 Quando não temos acesso imediato ao valor real da variável resposta (por exemplo, em sistemas onde as respostas são coletadas com atraso ou nunca são conhecidas), devemos utilizar métricas indiretas para monitoramento.
 
 **Monitoramento baseado nos dados de entrada**
