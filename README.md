@@ -133,6 +133,10 @@ pip install -r requirements.txt
    - Execute o comando *python -m streamlit run Home.py*
    - Isso irá exibir a página principal 
 
+![Texto Alternativo](docs/Home_streamlit.png)
+![Texto Alternativo](docs/Inferencia.png)
+![Texto Alternativo](docs/Analise_modelos.png)
+
 
 ## Diagrama de Pipelines e Fluxos
 
