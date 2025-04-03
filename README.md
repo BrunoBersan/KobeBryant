@@ -155,7 +155,7 @@ O pipeline data_processing realiza o processamento e a seleção de features, pr
 
 - **Análise e Seleção de Features (analyze_and_select_features)**: Seleciona um subconjunto de features relevantes para o modelo, incluindo lat, lon, minutes_remaining, period, playoffs, shot_distance, loc_x, loc_y e shot_made_flag. Essa etapa é aplicada tanto ao conjunto de dados principal (data_shots_normalized) quanto ao conjunto de produção (data_shots_prod_normalized), gerando os datasets data_features e data_features_prod, respectivamente.
 
-- **Divisão dos Dados (split_data)**: Divide o conjunto de dados data_features em conjuntos de treino (shots_train) e teste (shots_test) na proporção 80/20, utilizando estratificação com base na variável alvo shot_made_flag para manter a proporção de classes. A divisão é feita com um random_state=42 para garantir reprodutibilidade.
+- **Divisão dos Dados (split_data)**: Divide o conjunto de dados data_features em conjuntos de treino (shots_train) e teste (shots_test) na proporção 80/20, utilizando estratificação com base na variável alvo shot_made_flag para manter a proporção de classes. A divisão é feita com um random_state=42 para garantir reprodutibilidade. A estratificação garante que a distribuição da variável alvo seja mantida em ambos os conjuntos, reduzindo o risco de viés na separação.
 
 
 - **split_data_node**: Divide o conjunto de dados principal em treino e teste.
@@ -263,7 +263,7 @@ Os dados fornecidos para treinamento do modelo continham apenas shots realizados
    Nesta análise observamos que a Decision Tree obteve resultados melhores com os dados de produção, conseguindo prever dados de arremesos em produção. Por sua vez a regressão logistica apresentou melhores resultados com os dados de Treino e Teste, mas perfomando muito mal em produção, o que era esperado, já que a base de dados de produção contém apenas amostras que não foram contempladas no treinamento do modelo.
    Ambos os modelos não tinham capacidade de perfomar bem para o dataset de produção pois os dados não estavam contidos na amostra de treinamento.
    Analisando as métricas e os graficos, com os dados de Teste e não de produção, o modelo candidato para mais experimentos e tunings seria a **Regressão logistica**. 
-   
+
 
 **Modelos Treinados**: Os modelos e todas as suas métricas são salvos no MLflow e podem ser acessados via UI (mlflow ui) em http://localhost:5000. Executando antes o comando mlflow server
 
@@ -282,5 +282,51 @@ Os dados fornecidos para treinamento do modelo continham apenas shots realizados
 **Modelos Mais Complexos**: Testar modelos mais avançados, como Random Forest ou Gradient Boosting, pode capturar melhor os padrões nos dados.
 
 **Obter Probabilidades**: Atualmente, a API do MLflow retorna apenas previsões binárias. Uma melhoria seria ajustar o modelo servido para retornar as probabilidades (predict_proba) e usá-las para colorir o gráfico com um gradiente.
+
+
+## Monitoramento e Saúde do Modelo 
+
+Monitorar a saúde de um modelo em produção é essencial para garantir que ele continue fazendo previsões confiáveis ao longo do tempo. Esse monitoramento pode ser dividido em dois cenários:
+
+ - Com disponibilidade da variável resposta (target) no ambiente de produção
+ - Sem disponibilidade da variável resposta no ambiente de produção
+
+
+### Cenário COM a variável resposta disponível ###
+Se for possível coletar os valores reais da variável alvo (y_real), podemos comparar as previsões do modelo (y_pred) com os valores reais para avaliar diretamente a performance do modelo.
+
+**Métricas de desempenho**
+
+Acurácia, Precisão, Recall e F1-Score (para classificação)
+Erro Médio Absoluto (MAE), Erro Quadrático Médio (MSE), R² (para regressão)
+Matriz de Confusão: Identifica padrões de erro do modelo
+Curva ROC e AUC: Mede a separabilidade entre classes
+
+**Técnicas de Monitoramento**
+
+ - Reavaliação periódica: Calcular métricas periodicamente para verificar quedas de desempenho.
+ - Detecção de conceito derivante (Concept Drift): O modelo pode perder precisão com o tempo se os padrões dos dados mudarem. Técnicas como Kolmogorov-Smirnov Test e Jensen-Shannon Divergence podem ser usadas para detectar drifts.
+ - Retraining Automático: Se o modelo perder performance, ele pode ser re-treinado com novos dados.
+
+### Cenário SEM a variável resposta disponível ### 
+Quando não temos acesso imediato ao valor real da variável resposta (por exemplo, em sistemas onde as respostas são coletadas com atraso ou nunca são conhecidas), devemos utilizar métricas indiretas para monitoramento.
+
+**Monitoramento baseado nos dados de entrada**
+
+Desvio estatístico das features: Verificar se a distribuição das features de entrada mudou drasticamente ao longo do tempo.
+Monitoramento de outliers: Um aumento no número de valores fora da distribuição esperada pode indicar que o modelo está recebendo dados diferentes do que foi treinado.
+Análise de drift nas features: Testes estatísticos como Kolmogorov-Smirnov (KS test) podem detectar mudanças na distribuição das features.
+
+**Monitoramento das previsões do modelo**
+
+ - Distribuição das probabilidades preditas: Em modelos de classificação, se o modelo começar a prever sempre valores próximos de 0 ou 1, pode ser um sinal de problema.
+ - Taxa de rejeição: Se um modelo de crédito, por exemplo, começar a rejeitar mais clientes do que o esperado, pode indicar que está desatualizado.
+ - Monitoramento de incerteza: Se o modelo trabalha com incerteza (como modelos bayesianos), podemos acompanhar se a confiança das previsões está diminuindo.
+
+**Estratégias alternativas**
+
+ - Feedback humano: Se houver usuários humanos no loop, eles podem fornecer feedback indireto sobre a qualidade das previsões.
+ - Monitoramento de impacto no negócio: Se o modelo influencia indicadores de negócio (exemplo: taxa de conversão, número de vendas), podemos acompanhar se esses indicadores se comportam conforme esperado.
+
 
 ### Sinta-se à vontade para usar, modificar e distribuir o código conforme necessário. ###
