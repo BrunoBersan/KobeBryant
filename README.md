@@ -263,6 +263,7 @@ Os dados fornecidos para treinamento do modelo continham apenas shots realizados
    Nesta análise observamos que a Decision Tree obteve resultados melhores com os dados de produção, conseguindo prever dados de arremesos em produção. Por sua vez a regressão logistica apresentou melhores resultados com os dados de Treino e Teste, mas perfomando muito mal em produção, o que era esperado, já que a base de dados de produção contém apenas amostras que não foram contempladas no treinamento do modelo.
    Ambos os modelos não tinham capacidade de perfomar bem para o dataset de produção pois os dados não estavam contidos na amostra de treinamento.
    Analisando as métricas e os graficos, com os dados de Teste e não de produção, o modelo candidato para mais experimentos e tunings seria a **Regressão logistica**. 
+   
 
 **Modelos Treinados**: Os modelos e todas as suas métricas são salvos no MLflow e podem ser acessados via UI (mlflow ui) em http://localhost:5000. Executando antes o comando mlflow server
 
