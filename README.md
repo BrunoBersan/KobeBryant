@@ -233,7 +233,8 @@ Esses gráficos são salvos no diretório data/08_reporting/ com nomes que indic
 
 ## Ferramentas ##
 
-### MLFlow ### : O MLFlow é uma plataforma para o gerenciamento do ciclo de vida de um projeto de Machine Learning. Ele ajuda no rastreio de experimentos, análise de modelos, comparação de métricas e estrutura de pipelines.
+### MLFlow ### 
+   O MLFlow é uma plataforma para o gerenciamento do ciclo de vida de um projeto de Machine Learning. Ele ajuda no rastreio de experimentos, análise de modelos, comparação de métricas e estrutura de pipelines.
    #### Por que usar o MLFlow? ####
    - **Rastreamento de experimentos**: O processo de Análise de hyperparametros, métricas, comparações de modelos pode ser bem desafiador se não houver um gerenciamento dos resultados. O MLFlow foi utilizado exatamente para isso. Com ele, conseguimos rastrear o experimento, os hyperparametros dos modelos, as métricas e resultados de diversas rodadas de testes e treinamentos. Com o MLFlow Ui nós podemos comparar as versões dos modelos que obtiveram melhores resultados e promove-los para serem candidatos a um processo de produção. 
 
