@@ -10,12 +10,12 @@ def create_pipeline(**kwargs) -> Pipeline:
 
     return pipeline([
         node(func=logistic_regression_model, 
-            inputs=['shots_train', 'params:session_id'], 
+            inputs=['shots_train', 'params:session_id', 'params:path_mlflow_runs'], 
             outputs='lr_tuned', 
             name="logistic_regression_model"),
 
         node(func=decision_tree_model, 
-            inputs=['shots_train', 'params:session_id'], 
+            inputs=['shots_train', 'params:session_id','params:path_mlflow_runs'], 
             outputs='dt_tuned', 
             name="decision_tree_model"),        
 

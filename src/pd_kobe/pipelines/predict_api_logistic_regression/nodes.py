@@ -13,6 +13,8 @@ from sklearn.metrics import confusion_matrix,roc_curve, roc_auc_score
 from sklearn.metrics import log_loss, roc_auc_score, precision_score, accuracy_score, recall_score,f1_score
 import mlflow
 
+from pd_kobe.common.feature_importance import show_importance_features
+
 def serve_and_predict(data: pd.DataFrame,model_name, model, port: int = 5002) -> pd.DataFrame:
     """
     faz a requisição pra API e retorna as previsões como DataFrame.
@@ -203,6 +205,8 @@ def plot_shot_predictions_and_metrics(data: pd.DataFrame, predictions: pd.DataFr
     plt.title("Relatório de Métricas do Modelo")
     plt.savefig(f"data/08_reporting/metrics_report_table_{model_name}_prod.png", bbox_inches="tight")
     
+    show_importance_features(model, X_test, model_name, '_prod')
+
     return {
         "metrics": metrics_df,
         "predicted_probabilities": y_proba_df

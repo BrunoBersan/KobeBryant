@@ -38,10 +38,10 @@ def register_model_with_mlflow(model, model_name, run_metrics):
     for metric_name, metric_value in run_metrics.items():
         mlflow.log_metric(metric_name, metric_value)
 
-def logistic_regression_model(train_features: pd.DataFrame, session_id) -> dict:
+def logistic_regression_model(train_features: pd.DataFrame, session_id, path_mlflow_runs) -> dict:
     # Definir o tracking URI (ajuste conforme sua preferência)
     
-    mlflow.set_tracking_uri("file:///C:/Projetos/especializacao_ia/segundo_modulo/pd-kobe/mlruns")
+    mlflow.set_tracking_uri(path_mlflow_runs)
     while mlflow.active_run():
         mlflow.end_run()
 
@@ -108,9 +108,9 @@ def logistic_regression_model(train_features: pd.DataFrame, session_id) -> dict:
 
     return tuned_lr
 
-def decision_tree_model(train_features: pd.DataFrame, session_id) -> dict:
+def decision_tree_model(train_features: pd.DataFrame, session_id, path_mlflow_runs) -> dict:
     # Definir o tracking URI (ajuste conforme sua preferência)
-    mlflow.set_tracking_uri("file:///C:/Projetos/especializacao_ia/segundo_modulo/pd-kobe/mlruns")
+    mlflow.set_tracking_uri(path_mlflow_runs)
     while mlflow.active_run():
         mlflow.end_run()
 

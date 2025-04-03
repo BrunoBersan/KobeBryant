@@ -37,7 +37,7 @@ lr_model: LogisticRegression = load_model('lr_tuned')
 dt_model: DecisionTreeClassifier = load_model('dt_tuned')
 
 # Carregar o dataset real
-data_path = '../data/05_model_input/shots_test.parquet'
+data_path = '../data/04_feature/data_features_prod.parquet'
 if not os.path.exists(data_path):
     st.error(f"Arquivo {data_path} não encontrado.")
 else:

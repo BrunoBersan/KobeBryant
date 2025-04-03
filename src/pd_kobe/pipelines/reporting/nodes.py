@@ -14,8 +14,11 @@ import psutil
 import os
 from typing import Dict, List
 
+from pd_kobe.common.feature_importance import show_importance_features
 
-def save_model_plots_metrics(metrics: pd.DataFrame,shots_data: pd.DataFrame, predicted_probabilities: pd.DataFrame, predictions: pd.DataFrame, model, data_type: str):
+
+
+def save_model_plots_metrics( metrics: pd.DataFrame,shots_data: pd.DataFrame, predicted_probabilities: pd.DataFrame, predictions: pd.DataFrame, model, data_type: str):
 
     model_name = get_model_short_name(model)
     print(f"Modelo recebido: {type(model).__name__} (short name: {model_name})_{data_type}")
@@ -83,6 +86,10 @@ def save_model_plots_metrics(metrics: pd.DataFrame,shots_data: pd.DataFrame, pre
     plt.savefig(f"data/08_reporting/kobe_shots_{model_name}_{data_type}.png", bbox_inches="tight")
     plt.close()
     print(f"Gráfico de chutes do Kobe salvo: kobe_shots_{model_name}_{data_type}.png")
+    
+    X_data = shots_data.drop(columns=['shot_made_flag'])
+    show_importance_features(model, X_data, model_name, data_type)
+
 
 def get_model_short_name(model):
     # Dicionário mapeando o nome completo para a sigla
@@ -96,4 +103,6 @@ def get_model_short_name(model):
     
     # Retorna a sigla correspondente ou o nome completo se não encontrado
     return model_name_map.get(full_model_name, full_model_name)
+
+
 

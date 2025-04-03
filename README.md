@@ -2,7 +2,7 @@
 
 ## Visão Geral
 
-Este projeto foi desenvolvido como parte do **Curso de Especialização em Inteligência Artificial (Segundo Módulo)** e tem como objetivo prever se um arremesso do Kobe Bryant foi convertido ou não com base em dados históricos de jogos da NBA. Utilizando técnicas de machine learning, o projeto emprega o framework **Kedro** para gerenciamento de pipelines de dados, o **PyCaret** para treinamento e ajuste de modelos, e o **MLflow** para rastreamento de experimentos e implantação de modelos. O objetivo é construir um pipeline robusto que processe os dados, treine modelos, faça previsões e visualize os resultados de forma clara e informativa.
+Este projeto foi desenvolvido como parte do **Curso de Especialização em Inteligência Artificial (INFNET)** e tem como objetivo prever se um arremesso do Kobe Bryant foi convertido ou não com base em dados históricos de jogos da NBA. Utilizando técnicas de machine learning, o projeto emprega o framework **Kedro** para gerenciamento de pipelines de dados, o **PyCaret** para treinamento e ajuste de modelos, e o **MLflow** para rastreamento de experimentos e implantação de modelos. O objetivo é construir um pipeline robusto que processe os dados, treine modelos, faça previsões e visualize os resultados de forma clara e informativa.
 
 O conjunto de dados utilizado contém características como a localização do arremesso (`lat` e `lon`), tipo de arremesso (`shot_type`), tipo de ação (`action_type`), distância do arremesso (`shot_distance`), período do jogo (`period`) e a variável alvo `shot_made_flag` (1 para arremesso convertido, 0 para arremesso errado). O projeto abrange pré-processamento de dados, treinamento de modelos, previsão por meio de uma API e visualização das previsões em um gráfico de dispersão.
 
@@ -56,14 +56,19 @@ pd-kobe/
    - O MLflow rastreia os experimentos, logando métricas e os modelos treinados.
 
 3. **Previsão via API**:
-   - Os modelos treinados são servidos via MLflow
-   - Um nó do pipeline (`serve_and_predict`) automatiza o processo de subir o servidor do MLflow, fazer a requisição à API (`/invocations`) e desligar o servidor.
+   - Os modelos treinados podem ser servidos via MLFlow ( ver mais na sessão 'Como executar o projeto')
+   - Um nó do pipeline (`serve_and_predict`) faz a requisição à API (`/invocations`)
    - As previsões são salvas em `data/07_model_output/predictions.csv`.
 
 4. **Visualização**:
    - Um gráfico de dispersão é gerado para visualizar os locais dos arremessos (`lat` e `lon`) e as previsões do modelo.
    - Arremessos previstos como convertidos (`1`) são representados por **bolinhas verdes**, e arremessos previstos como errados (`0`) por **bolinhas vermelhas**.
    - O gráfico é salvo em `data/08_reporting/shot_predictions.png`.
+
+4. **Dashboard e Inferência**:
+   - Foi criada uma dashboard com uma página para realizar inferências aos modelos e também uma para análise comparativa dos modelos 
+   - Framework utilizado para a construção das páginas foi o Stremlit
+   - O gráfico é salvo em `data/08_reporting/shot_predictions.png`.   
 
 ---
 
@@ -81,6 +86,7 @@ Para executar o projeto, você precisa ter as seguintes ferramentas instaladas:
 - **Seaborn** (opcional, para gráficos estilizados)
 - **Scikit-learn**
 - **Scikit-optimize** (para ajuste de hiperparâmetros)
+- **Stremlit**  ( para a construção das páginas )
 
 Você pode instalar as dependências listadas no arquivo `requirements.txt`:
 
@@ -96,16 +102,36 @@ pip install -r requirements.txt
 
 2. **Configurar o MLflow**
     - Defina o URI de rastreamento do MLflow (já configurado no projeto):
-        export MLFLOW_TRACKING_URI=file:///**DIRETÓRIO DO PROJETO
+        existe um parametro em conf/base/parameters.yml chamado 'path_mlflow_runs' coloque a pasta onde ficará o projeto no seu ambiente e adicione /mlruns ao final.
 
 3. **Executar o Pipeline**
     - kedro run
 
     Isso irá:
-    1. Pré-processar os dados.
+    1. Pré-processar os dados e selecionar as features.
     2. Treinar os modelos (Regressão Logística e Árvore de Decisão).
-    3. Fazer previsões dos modelos localmente e também usando a API do MLflow.
+    3. Fazer previsões dos modelos localmente
     4. Gerar o gráfico de dispersão, curva, roc, métricas e mais.
+    5. Disponibilizar a estrutura para iniciar a dashboard e a inferência
+
+4. **Para criar a API com os modelos e consumi-la**
+   1. **Modelo árvore de decisão**
+      - Executar o comando:  *mlflow models serve -m "models:/decision_tree_model/latest" -p 5001 --env-manager conda*
+      - Isso irá subir o modelo de árvore de decisão para inferência
+      - Rodar o pipeline de inferência da DT : *kedro run --pipeline predict_api_decision_tree*
+      - Serão criados os artefatos referentes a análise da árvore de decisão ( Mais detalhes na sessão artefatos )
+
+   2. **Modelo Regressão Logistica**
+      - Executar o comando:  *mlflow models serve -m "models:/logistic_regression_model/latest" -p 5002 --env-manager conda*
+      - (*Atenção ao número da porta, caso seja necessário, pode alterar o parâmetro do pipeline*)
+      - Isso irá subir o modelo de Regressão Logística para inferência
+      - Rodar o pipeline de inferência da LR : *kedro run --pipeline predict_api_logistic_regression*
+      - Serão criados os artefatos referentes a análise da árvore de decisão ( Mais detalhes na sessão artefatos )   
+
+5. **Para executar a Dashboard do stremlit**
+   - Acesse o diretório do streamlit no projeto pelo terminal (cd streamlit)
+   - Execute o comando *python -m streamlit run Home.py*
+   - Isso irá exibir a página principal 
 
 
 ## Diagrama de Pipelines e Fluxos
@@ -125,6 +151,7 @@ O pipeline data_preparation é responsável pela limpeza inicial dos dados bruto
 
  ### 2. Processamento dos Dados e Seleção de Features (data_processing) ### 
 O pipeline data_processing realiza o processamento e a seleção de features, preparando os dados para o treinamento do modelo. Ele também divide o conjunto de dados em treino e teste. As etapas incluem:
+
 
 - **Análise e Seleção de Features (analyze_and_select_features)**: Seleciona um subconjunto de features relevantes para o modelo, incluindo lat, lon, minutes_remaining, period, playoffs, shot_distance, loc_x, loc_y e shot_made_flag. Essa etapa é aplicada tanto ao conjunto de dados principal (data_shots_normalized) quanto ao conjunto de produção (data_shots_prod_normalized), gerando os datasets data_features e data_features_prod, respectivamente.
 
@@ -164,22 +191,58 @@ O pipeline reporting é responsável por gerar relatórios visuais e gráficos p
 - **Distribuição de Probabilidades**: Plota um histograma das probabilidades previstas, mostrando a distribuição das previsões.
 - **Gráfico de Chutes do Kobe**: Um gráfico de dispersão que mostra os locais dos arremessos (loc_x e loc_y), com bolinhas verdes para acertos e vermelhas para erros, com base nos valores reais (shot_made_flag).
 Esses gráficos são salvos no diretório data/08_reporting/ com nomes que indicam o modelo e o conjunto de dados (ex.: confusion_matrix_report_LR_train.png).
-- **Previsão via API (serve_and_predict)**: Sobe o servidor do MLflow, faz a requisição à API (/invocations) para prever os arremessos no conjunto de produção (data_features_prod) e retorna as previsões como um DataFrame (predictions).
+- **Previsão via API (serve_and_predict)**: fFaz a requisição à API (/invocations) para prever os arremessos no conjunto de produção (data_features_prod) e retorna as previsões como um DataFrame (predictions).
 - **Gráfico de Previsões (plot_shot_predictions)**: Gera um gráfico de dispersão com os locais dos arremessos no conjunto de produção (lat e lon), usando as previsões do modelo. Arremessos previstos como convertidos (1) são representados por bolinhas verdes, e arremessos previstos como errados (0) por bolinhas vermelhas. O gráfico é salvo em data/08_reporting/shot_predictions.png.
+
+
+## Descrição dos artefatos gerados 
+   - **01_raw/data_shots e dataset_kobe_prod** = Dados de arremessos não tratados fornecidos para o projeto. (formato parquet)
+
+   - **02_intermediate/data_shots_not_null e data_shots_prod_not_null** = Dados de arremessos depois de ter tratados os valores nulos(formato parquet)
+
+   - **03_primary/data_shots_normalized e data_shots_prod_normalized** = Dados dos arremessos com análise e remoção de duplicatas(formato parquet)
+   
+   - **04_feature/data_features_prod e data_features** = Dados gerados a partir da seleção das features (formato parquet)
+
+   - **05_model_input/shots_test e shots_train** = Separação dos dados em treino e teste na proporção 80% e 20% estratificados prontos para o treinamento dos modelos (formato parquet)
+
+   - **06_models/dt_tuned e lr_tuned** = Modelos treinados, ajustados(tuned) e salvos no formato .pickle 
+
+   - **07_model_output/** = Métricas e previsões dos modelos (.csv)
+      - Arquivos de métricas (metrics_*) contém as métricas dos modelos em diferentes cenários (Treino, Teste e Prod)
+      - Arquivos de probabilidades (predicted_probabilities_*) também com diferentes cenários (Treino, Teste e Prod), 
+      - arquivos de predições (predictions_*) Arquivos das predições dos modelos nos diferentes cenários (Treino, Teste e Prod)
+
+   - **08_reporting** = Plots e análises gerais dos dados e modelos (.png )
+      - confusion_matrix_* = Análise da matriz de confusão nos diferentes cenários (Treino, Teste e Prod)
+      - distribuitions_* = Análise das distribuições de probabilidades (treino e teste)
+      - kobe_shots_* = Análise da distribuição dos arremesos do Kobe dentro da quadra ( Treino e Teste )
+      - metrics_report_* = Métricas dos modelos em forma visual (Treino, teste e Prod)
+      - roc_curve_* = Análise da curva ROC dos modelos nos diversos cenários (Treino, Teste e Prod)
+      - Shot_predictions_* = Análise das previsões com dados de produção para os modelos RL e DT
+      - feature_importance_* = Análise da importância das features que o modelo considerou nos diversos cenários (Treino, teste e Prod)
 
 
 ## Resultados
 
-**Modelos Treinados**: Os modelos são salvos no MLflow e podem ser acessados via UI (mlflow ui) em http://localhost:5000.
+**Modelos Treinados**: Os modelos e todas as suas métricas são salvos no MLflow e podem ser acessados via UI (mlflow ui) em http://localhost:5000. Executando antes o comando mlflow server
 
-**Previsões**: As previsões são binárias (0 para erro, 1 para acerto) e salvas em um arquivo CSV.
+**Previsões**: As previsões são binárias (0 para erro, 1 para acerto) e salvas em um arquivo CSV. Também são salvos diversos plots e gráficos para análise do caso.
 
 **Gráfico de Dispersão**: O gráfico mostra os locais dos arremessos com bolinhas verdes (acertos) e vermelhas (erros), facilitando a análise visual das previsões.
+
+## Ferramentas ##
+
+### MLFlow ### : O MLFlow é uma plataforma para o gerenciamento do ciclo de vida de um projeto de Machine Learning. Ele ajuda no rastreio de experimentos, análise de modelos, comparação de métricas e estrutura de pipelines.
+   #### Por que usar o MLFlow? ####
+   - **Rastreamento de experimentos**: O processo de Análise de hyperparametros, métricas, comparações de modelos pode ser bem desafiador se não houver um gerenciamento dos resultados. O MLFlow foi utilizado exatamente para isso. Com ele, conseguimos rastrear o experimento, os hyperparametros dos modelos, as métricas e resultados de diversas rodadas de testes e treinamentos. Com o MLFlow Ui nós podemos comparar as versões dos modelos que obtiveram melhores resultados e promove-los para serem candidatos a um processo de produção. 
+
+****
 
 
 ## Problemas
 
-**Diferença nos dados de produção**: Os dados fornecidos para treinamento do modelo continham apenas shots realizados de dentro do garrafão, ou seja, shots de 2 pnts. A base de produção foi fornecida apenas com shots realizados de fora do garrafão. Por conta disso, tivemos um modelo que não foi capaz de prever os acertos de produção, classificando tudo como erro. 
+**Diferença nos dados de produção**: Os dados fornecidos para treinamento do modelo continham apenas shots realizados de dentro do garrafão, ou seja, shots de 2 pontos. A base de produção foi fornecida apenas com shots realizados de fora do garrafão. Por conta disso, tivemos um modelo que não foi capaz de prever os acertos de produção, classificando tudo como erro. A Árvore de decisão ainda conseguiu prever alguns acertos, mas é perceptível que não passou de aleatoriedade. Já a regressão logística, não foi capaz de prever nenhum arremesso como positivo.
 
 
 ## Possíveis Melhorias
