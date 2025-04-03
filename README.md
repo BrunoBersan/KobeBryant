@@ -234,27 +234,51 @@ Esses gráficos são salvos no diretório data/08_reporting/ com nomes que indic
 ## Ferramentas ##
 
 ### MLFlow ### 
-   O MLFlow é uma plataforma para o gerenciamento do ciclo de vida de um projeto de Machine Learning. Ele ajuda no rastreio de experimentos, análise de modelos, comparação de métricas e estrutura de pipelines.
-   #### Por que usar o MLFlow? ####
+   O MLFlow é uma plataforma para o gerenciamento do ciclo de vida de um projeto de Machine Learning. Ele ajuda no rastreio de experimentos, análise de modelos, comparação de métricas e estrutura de pipelines. O MLFlow é uma plataforma vasta e tem muitos outros recursos que podem ser explorados em outros projetos.
+   #### Para que o MLFlow foi usado no projeto? ####
    - **Rastreamento de experimentos**: O processo de Análise de hyperparametros, métricas, comparações de modelos pode ser bem desafiador se não houver um gerenciamento dos resultados. O MLFlow foi utilizado exatamente para isso. Com ele, conseguimos rastrear o experimento, os hyperparametros dos modelos, as métricas e resultados de diversas rodadas de testes e treinamentos. Com o MLFlow Ui nós podemos comparar as versões dos modelos que obtiveram melhores resultados e promove-los para serem candidatos a um processo de produção. 
+   - **Atualização do modelo**: Através do MLFlow e do registro dos experimentos, podemos Promover o melhor modelo, que obteve os melhores resultados para ser um candidato a produção.
+   - **Provisionamento (Deployment)** Através dos comandos para servir o modelo, conforme mostrado anteriormente, temos a opção de escolher o 'Production' ao invés do 'Latest' para servir o modelo promovido a produção.
 
-****
+### Pycaret ### 
+   O Pycaret é uma biblioteca Python para automação de Machine Learning (AutoML). Ele simplifica e acelera o desenvolvimento de modelos de ML permitindo que seja possível a comparação e experimentos de diferentes algoritmos e pipelines com poucas linhas de código. O Pycaret é uma biblioteca completa e muito eficiente.
+   #### Para que o Pycaret foi usado no projeto? ####
+   - **Seleção de modelos**: Embora tenhamos escolhido de maneira fixa os modelos de Árvore de decisão e Regressão Logistica, utilizamos o Pycaret, ainda assim, para nos fornecer esses modelos.
+   - **Tuning e funções de trinamento**: Utilizamos o Pycaret também na etapa de criação do experimento e no Tuning dos modelos, ajustes de hyperparametros e tipos de buscas
+
+### Streamlit ### 
+   O Streamlit é um framework python para criar aplicativos web interativos de maneira extremamente simples e rápida, sem que seja necessário muito conhecimento em desenvolvimento web. Ele é muito utilizado na etapa de Inferência de dados, apresentação de resultados e para transformar notebooks Jupyter e scripts Python em dashboards interativos.
+   #### Para que o Pycaret foi usado no projeto? ####
+   - **Comparação de Modelos e monitoramento da saúde do modelo**: Foi criada uma página que comparou as métricas dos dois modelos com os dados de produção.
+   - **Inferência dos dados**: Foi criada uma página para inputar os dados para fazer uma análise se o Kobe acertou ou errou o arremesso.
+
+### Scikit-Learn ###
+   O Scikit-Learn é uma das bibliotecas mais populares para Machine Learning em Python. Ele possui uma ampla variedade de ferramentas de aprendizado de máquina, incluindo classificação, regressão, clustering e redução de dimensionalidade. Ele possui também funções para pré-processamento de dados, como Seleção de modelos e otimização de hiperparâmetros.
+   #### Para que o Scikit-Learn foi usado no projeto? ####
+   **Separação de Treino e Teste**: Foi utilizada a função *train_test_split* para criar as amostras de Treino e Teste de maneira estratificada na etapa de processamento dos dados.
+   **Métricas**: Foram utilizadas diversas ferramentas de Métricas do Scikit-learn para avaliar os modelos, como acurácia, precisão, recall, f1, logloss etc.
+   **Gráficos**: O Scikit-learn também entrou no pipeline de Reporting para gerar os conteúdos que seriam plotados, como Matriz de Confusão, Curva roc e Auc_score
+   **Seleção do modelo**: a Integração do MLFLow e Scikit-learn foi utilizada no registro das métricas dos modelos.
+
+## Problemas no Projeto
+
+Os dados fornecidos para treinamento do modelo continham apenas shots realizados de dentro do garrafão, ou seja, shots de 2 pontos. A base de produção foi fornecida apenas com shots realizados de fora do garrafão. Por conta disso, tivemos um modelo que não foi capaz de prever os acertos de produção, classificando tudo como erro, no caso da regressão logistica e chutando aleatóriamente, no caso da árvore de decisão. A Árvore de decisão ainda conseguiu prever alguns acertos, mas é perceptível que não passou de aleatoriedade. Já a regressão logística, não foi capaz de prever nenhum arremesso como positivo.
 
 
-## Problemas
+## Seleção do modelo para conclusão ##
+   Nesta análise observamos que a Decision Tree obteve resultados melhores com os dados de produção, conseguindo prever dados de arremesos em produção. Por sua vez a regressão logistica apresentou melhores resultados com os dados de Treino e Teste, mas perfomando muito mal em produção, o que era esperado, já que a base de dados de produção contém apenas amostras que não foram contempladas no treinamento do modelo.
+   Ambos os modelos não tinham capacidade de perfomar bem para o dataset de produção pois os dados não estavam contidos na amostra de treinamento.
+   Analisando as métricas e os graficos, com os dados de Teste e não de produção, o modelo candidato para mais experimentos e tunings seria a **Regressão logistica**. 
 
-**Diferença nos dados de produção**: Os dados fornecidos para treinamento do modelo continham apenas shots realizados de dentro do garrafão, ou seja, shots de 2 pontos. A base de produção foi fornecida apenas com shots realizados de fora do garrafão. Por conta disso, tivemos um modelo que não foi capaz de prever os acertos de produção, classificando tudo como erro. A Árvore de decisão ainda conseguiu prever alguns acertos, mas é perceptível que não passou de aleatoriedade. Já a regressão logística, não foi capaz de prever nenhum arremesso como positivo.
-
-
+ 
 ## Possíveis Melhorias
-
-**Obter Probabilidades**: Atualmente, a API do MLflow retorna apenas previsões binárias. Uma melhoria seria ajustar o modelo servido para retornar as probabilidades (predict_proba) e usá-las para colorir o gráfico com um gradiente.
 
 **Balanceamento de Classes**: Precisariamos de mais dados de fora do garrafão no treinamento do modelo para melhorar as métricas e conseguir prever outros tipos de arremessos também.
 
-**Mais Features**: Adicionar novas features (ex.: interações entre lat e lon, ou shot_distance ao quadrado) pode melhorar o desempenho do modelo.
+**Mais Features**: Verificar outras features como a area do shot, season para verificar uma possivel sazonalidade o team_name apesar de não parecer, pode favorecer em diversas jogadas que o levariam a acertar mais arremesos, o oponente poderia indicar algo sobre a marcação que ele teria etc. Pode ser feita uma análise mais profunda das features e encontrar relações com a taxa de acerto dos arremessos.
 
 **Modelos Mais Complexos**: Testar modelos mais avançados, como Random Forest ou Gradient Boosting, pode capturar melhor os padrões nos dados.
 
+**Obter Probabilidades**: Atualmente, a API do MLflow retorna apenas previsões binárias. Uma melhoria seria ajustar o modelo servido para retornar as probabilidades (predict_proba) e usá-las para colorir o gráfico com um gradiente.
 
 ### Sinta-se à vontade para usar, modificar e distribuir o código conforme necessário. ###
