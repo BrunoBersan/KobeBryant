@@ -46,7 +46,9 @@ def logistic_regression_model(train_features: pd.DataFrame, session_id, path_mlf
         mlflow.end_run()
 
     exp = configure_pycaret_setup(train_features, session_id)
-    with mlflow.start_run(run_name="logistic_regression", nested=True):  # Usar execução aninhada
+    
+    mlflow.set_experiment("ProjetoKobe")
+    with mlflow.start_run(run_name="Treinamento_Regressao_logistica", nested=True):  # Usar execução aninhada
         lr = exp.create_model('lr', verbose=False)
 
         lr_search_space = { 
@@ -115,7 +117,9 @@ def decision_tree_model(train_features: pd.DataFrame, session_id, path_mlflow_ru
         mlflow.end_run()
 
     exp = configure_pycaret_setup(train_features, session_id)
-    with mlflow.start_run(run_name="decision_tree", nested=True):  # Usar execução aninhada
+    
+    mlflow.set_experiment("ProjetoKobe")
+    with mlflow.start_run(run_name="Treinamento_arvore_decisao", nested=True):  # Usar execução aninhada
         dt = exp.create_model('dt', verbose=False)
 
         dt_search_space = { 

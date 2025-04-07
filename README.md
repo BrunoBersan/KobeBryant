@@ -1,6 +1,6 @@
 # Projeto de Previsão de Arremessos do Kobe Bryant
 
-## Visão Geral
+# Visão Geral
 
 Este projeto foi desenvolvido como parte do **Curso de Especialização em Inteligência Artificial (INFNET)** e tem como objetivo prever se um arremesso do Kobe Bryant foi convertido ou não com base em dados históricos de jogos da NBA. Utilizando técnicas de machine learning, o projeto emprega o framework **Kedro** para gerenciamento de pipelines de dados, o **PyCaret** para treinamento e ajuste de modelos, e o **MLflow** para rastreamento de experimentos e implantação de modelos. O objetivo é construir um pipeline robusto que processe os dados, treine modelos, faça previsões e visualize os resultados de forma clara e informativa.
 
@@ -8,7 +8,7 @@ O conjunto de dados utilizado contém características como a localização do a
 
 ---
 
-## Estrutura do Projeto
+# Estrutura do Projeto
 
 O projeto é organizado utilizando o framework **Kedro**, que garante um pipeline de dados modular e reprodutível. Abaixo está a estrutura do projeto:
 
@@ -44,7 +44,7 @@ pd-kobe/
 ```
 --- 
 
-## Funcionalidades Principais
+# Funcionalidades Principais
 
 1. **Pré-processamento de Dados**:
    - Foram fornecidas bases de dados de produção e desenvolvimento para treinamento e validação do modelo.
@@ -71,79 +71,13 @@ pd-kobe/
    - O gráfico é salvo em `data/08_reporting/shot_predictions.png`.   
 
 ---
-
-## Pré-requisitos
-
-Para executar o projeto, você precisa ter as seguintes ferramentas instaladas:
-
-- **Python 3.11**
-- **Conda** (para gerenciamento de ambientes)
-- **Kedro 0.19.12**
-- **MLflow**
-- **PyCaret**
-- **Pandas**
-- **Matplotlib** (para visualizações)
-- **Seaborn** (opcional, para gráficos estilizados)
-- **Scikit-learn**
-- **Scikit-optimize** (para ajuste de hiperparâmetros)
-- **Stremlit**  ( para a construção das páginas )
-
-Você pode instalar as dependências listadas no arquivo `requirements.txt`:
-
-pip install -r requirements.txt
-
-## Como executar o projeto
-
-1. **Configurar o ambiente**
-    - Crie e ative um ambiente Conda para o projeto:
-        conda create -n kedro_env python=3.11
-        conda activate kedro_env
-        pip install -r requirements.txt
-
-2. **Configurar o MLflow**
-    - Defina o URI de rastreamento do MLflow (já configurado no projeto):
-        existe um parametro em conf/base/parameters.yml chamado 'path_mlflow_runs' coloque a pasta onde ficará o projeto no seu ambiente e adicione /mlruns ao final.
-
-3. **Executar o Pipeline**
-    - kedro run
-
-    Isso irá:
-    1. Pré-processar os dados e selecionar as features.
-    2. Treinar os modelos (Regressão Logística e Árvore de Decisão).
-    3. Fazer previsões dos modelos localmente
-    4. Gerar o gráfico de dispersão, curva, roc, métricas e mais.
-    5. Disponibilizar a estrutura para iniciar a dashboard e a inferência
-
-4. **Para criar a API com os modelos e consumi-la**
-   1. **Modelo árvore de decisão**
-      - Executar o comando:  *mlflow models serve -m "models:/decision_tree_model/latest" -p 5001 --env-manager conda*
-      - Isso irá subir o modelo de árvore de decisão para inferência
-      - Rodar o pipeline de inferência da DT : *kedro run --pipeline predict_api_decision_tree*
-      - Serão criados os artefatos referentes a análise da árvore de decisão ( Mais detalhes na sessão artefatos )
-
-   2. **Modelo Regressão Logistica**
-      - Executar o comando:  *mlflow models serve -m "models:/logistic_regression_model/latest" -p 5002 --env-manager conda*
-      - (*Atenção ao número da porta, caso seja necessário, pode alterar o parâmetro do pipeline*)
-      - Isso irá subir o modelo de Regressão Logística para inferência
-      - Rodar o pipeline de inferência da LR : *kedro run --pipeline predict_api_logistic_regression*
-      - Serão criados os artefatos referentes a análise da árvore de decisão ( Mais detalhes na sessão artefatos )   
-
-5. **Para executar a Dashboard do stremlit**
-   - Acesse o diretório do streamlit no projeto pelo terminal (cd streamlit)
-   - Execute o comando *python -m streamlit run Home.py*
-   - Isso irá exibir a página principal 
-
-![Texto Alternativo](docs/Home_streamlit.png)
-![Texto Alternativo](docs/Inferencia.png)
-![Texto Alternativo](docs/Analise_modelos.png)
-
-
-## Diagrama de Pipelines e Fluxos
+ 
+# Diagrama de Pipelines e Fluxos
 
 ![Texto Alternativo](docs/diagrama_fluxo.png)
 
 
-## Detalhes dos Pipelines
+# Detalhes dos Pipelines
 
  ### 1. Preparação dos Dados (data_preparation) ###
 O pipeline data_preparation é responsável pela limpeza inicial dos dados brutos, garantindo que estejam prontos para as próximas etapas do projeto. Ele processa tanto o conjunto de dados principal (data_shots) quanto o conjunto de produção (data_shots_prod). As principais etapas incluem:
@@ -199,7 +133,7 @@ Esses gráficos são salvos no diretório data/08_reporting/ com nomes que indic
 - **Gráfico de Previsões (plot_shot_predictions)**: Gera um gráfico de dispersão com os locais dos arremessos no conjunto de produção (lat e lon), usando as previsões do modelo. Arremessos previstos como convertidos (1) são representados por bolinhas verdes, e arremessos previstos como errados (0) por bolinhas vermelhas. O gráfico é salvo em data/08_reporting/shot_predictions.png.
 
 
-## Descrição dos artefatos gerados 
+# Descrição dos artefatos gerados 
    - **01_raw/data_shots e dataset_kobe_prod** = Dados de arremessos não tratados fornecidos para o projeto. (formato parquet)
 
    - **02_intermediate/data_shots_not_null e data_shots_prod_not_null** = Dados de arremessos depois de ter tratados os valores nulos(formato parquet)
@@ -227,7 +161,7 @@ Esses gráficos são salvos no diretório data/08_reporting/ com nomes que indic
       - feature_importance_* = Análise da importância das features que o modelo considerou nos diversos cenários (Treino, teste e Prod)
 
  
-## Ferramentas ##
+# Ferramentas #
 
 ### MLFlow ### 
    O MLFlow é uma plataforma para o gerenciamento do ciclo de vida de um projeto de Machine Learning. Ele ajuda no rastreio de experimentos, análise de modelos, comparação de métricas e estrutura de pipelines. O MLFlow é uma plataforma vasta e tem muitos outros recursos que podem ser explorados em outros projetos.
@@ -235,6 +169,7 @@ Esses gráficos são salvos no diretório data/08_reporting/ com nomes que indic
    - **Rastreamento de experimentos**: O processo de Análise de hyperparametros, métricas, comparações de modelos pode ser bem desafiador se não houver um gerenciamento dos resultados. O MLFlow foi utilizado exatamente para isso. Com ele, conseguimos rastrear o experimento, os hyperparametros dos modelos, as métricas e resultados de diversas rodadas de testes e treinamentos. Com o MLFlow Ui nós podemos comparar as versões dos modelos que obtiveram melhores resultados e promove-los para serem candidatos a um processo de produção. 
    - **Atualização do modelo**: Através do MLFlow e do registro dos experimentos, podemos Promover o melhor modelo, que obteve os melhores resultados para ser um candidato a produção.
    - **Provisionamento (Deployment)** Através dos comandos para servir o modelo, conforme mostrado anteriormente, temos a opção de escolher o 'Production' ao invés do 'Latest' para servir o modelo promovido a produção.
+   obs: Os detalhes do experimento, registros das métricas podem ser observadas em **/docs** 
 
 ### Pycaret ### 
    O Pycaret é uma biblioteca Python para automação de Machine Learning (AutoML). Ele simplifica e acelera o desenvolvimento de modelos de ML permitindo que seja possível a comparação e experimentos de diferentes algoritmos e pipelines com poucas linhas de código. O Pycaret é uma biblioteca completa e muito eficiente.
@@ -256,12 +191,12 @@ Esses gráficos são salvos no diretório data/08_reporting/ com nomes que indic
    **Gráficos**: O Scikit-learn também entrou no pipeline de Reporting para gerar os conteúdos que seriam plotados, como Matriz de Confusão, Curva roc e Auc_score
    **Seleção do modelo**: a Integração do MLFLow e Scikit-learn foi utilizada no registro das métricas dos modelos.
 
-## Problemas no Projeto
+# Problemas no Projeto
 
 Os dados fornecidos para treinamento do modelo continham apenas shots realizados de dentro do garrafão, ou seja, shots de 2 pontos. A base de produção foi fornecida apenas com shots realizados de fora do garrafão 3 pontos. Por conta disso, tivemos um modelo que não foi capaz de prever os acertos de produção, classificando tudo como erro, no caso da regressão logistica e chutando aleatóriamente, no caso da árvore de decisão. A Árvore de decisão ainda conseguiu prever alguns acertos, mas é perceptível que não passou de aleatoriedade. Já a regressão logística, não foi capaz de prever nenhum arremesso como positivo.
  
 
-## Resultados
+# Resultados
 
 **Seleção do modelo para conclusão:**
    Nesta análise observamos que a Decision Tree obteve resultados melhores com os dados de produção, conseguindo prever dados de arremesos em produção. Por sua vez a regressão logistica apresentou melhores resultados com os dados de Treino e Teste, mas perfomando muito mal em produção, o que era esperado, já que a base de dados de produção contém apenas amostras que não foram contempladas no treinamento do modelo.
@@ -277,7 +212,7 @@ Os dados fornecidos para treinamento do modelo continham apenas shots realizados
 
 **Dashboard para inferência**: O gráfico mostra os locais dos arremessos com bolinhas verdes (acertos) e vermelhas (erros), facilitando a análise visual das previsões.
  
-## Possíveis Melhorias
+# Possíveis Melhorias
 
 **Balanceamento de Classes**: Precisariamos de mais dados de fora do garrafão no treinamento do modelo para melhorar as métricas e conseguir prever outros tipos de arremessos também.
 
@@ -288,7 +223,7 @@ Os dados fornecidos para treinamento do modelo continham apenas shots realizados
 **Obter Probabilidades**: Atualmente, a API do MLflow retorna apenas previsões binárias. Uma melhoria seria ajustar o modelo servido para retornar as probabilidades (predict_proba) e usá-las para colorir o gráfico com um gradiente.
 
 
-## Monitoramento e Saúde do Modelo 
+# Monitoramento e Saúde do Modelo 
 
 Monitorar a saúde de um modelo em produção é essencial para garantir que ele continue fazendo previsões confiáveis ao longo do tempo. Esse monitoramento pode ser dividido em dois cenários:
 
@@ -333,7 +268,7 @@ Análise de drift nas features: Testes estatísticos como Kolmogorov-Smirnov (KS
  - Monitoramento de impacto no negócio: Se o modelo influencia indicadores de negócio (exemplo: taxa de conversão, número de vendas), podemos acompanhar se esses indicadores se comportam conforme esperado.
 
 
-## Estratégias de Retreinamento de Modelos em Produção ## 
+# Estratégias de Retreinamento de Modelos em Produção ## 
 
  **1. Estratégia Reativa (Baseada no Desempenho)**
    O modelo é reavaliado periodicamente, e o retreinamento ocorre somente quando há queda no desempenho.
@@ -351,6 +286,100 @@ Exemplo: Monitoramento da distribuição das variáveis de entrada para detectar
 **Vantagens**: Mantém o modelo atualizado de forma proativa, reduzindo riscos de erros.
 
 **Desvantagens**: Pode exigir mais poder computacional e monitoramento contínuo.
+
+# Pré-requisitos
+
+Para executar o projeto, você precisa ter as seguintes ferramentas instaladas:
+
+- **Python 3.11**
+- **Conda** (para gerenciamento de ambientes)
+- **Kedro 0.19.12**
+- **MLflow**
+- **PyCaret**
+- **Pandas**
+- **Matplotlib** (para visualizações)
+- **Seaborn** (opcional, para gráficos estilizados)
+- **Scikit-learn**
+- **Scikit-optimize** (para ajuste de hiperparâmetros)
+- **Stremlit**  ( para a construção das páginas )
+
+Você pode instalar as dependências listadas no arquivo `requirements.txt`:
+
+```bash
+pip install -r requirements.txt
+```
+
+
+# Como executar o projeto
+
+1. **Configurar o ambiente**
+    - Crie e ative um ambiente Conda para o projeto:
+    
+```bash
+        conda create -n kedro_env python=3.11
+```
+
+```bash  
+        conda activate kedro_env
+```
+```bash
+        pip install -r requirements.txt
+```
+
+2. **Configurar o MLflow**
+    - Defina o URI de rastreamento do MLflow (já configurado no projeto):
+        existe um parametro em conf/base/parameters.yml chamado 'path_mlflow_runs' coloque a pasta onde ficará o projeto no seu ambiente e adicione /mlruns ao final.
+
+3. **Executar o Pipeline**
+```bash
+    kedro run 
+```    
+
+   #### Isso irá: ####
+   1. Pré-processar os dados e selecionar as features.
+   2. Treinar os modelos (Regressão Logística e Árvore de Decisão).
+   3. Fazer previsões dos modelos localmente
+   4. Gerar o gráfico de dispersão, curva, roc, métricas e mais.
+   5. Disponibilizar a estrutura para iniciar a dashboard e a inferência
+
+4. **Para criar a API com os modelos e consumi-la**
+   1. **Modelo árvore de decisão**
+      - Executar o comando:  
+      ```bash 
+          mlflow models serve -m "models:/decision_tree_model/latest" -p 5001 --env-manager conda
+      ```
+      - Isso irá subir o modelo de árvore de decisão para inferência
+      - Rodar o pipeline de inferência da DT : 
+      ```bash 
+         kedro run --pipeline predict_api_decision_tree
+      ```
+      - Serão criados os artefatos referentes a análise da árvore de decisão ( Mais detalhes na sessão artefatos )
+
+   2. **Modelo Regressão Logistica**
+      - Executar o comando:  
+       ```bash 
+         mlflow models serve -m "models:/logistic_regression_model/latest" -p 5002 --env-manager conda
+      ```
+      - (*Atenção ao número da porta, caso seja necessário, pode alterar o parâmetro do pipeline*)
+      - Isso irá subir o modelo de Regressão Logística para inferência
+      - Rodar o pipeline de inferência da LR : 
+      ```bash 
+       kedro run --pipeline predict_api_logistic_regression
+      ```
+      - Serão criados os artefatos referentes a análise da árvore de decisão ( Mais detalhes na sessão artefatos )   
+
+5. **Para executar a Dashboard do stremlit**
+   - Acesse o diretório do streamlit no projeto pelo terminal (cd streamlit)
+   - Execute o comando 
+   ```bash 
+   python -m streamlit run Home.py
+   ```
+   - Isso irá exibir a página principal 
+
+![Texto Alternativo](docs/Home_streamlit.png)
+![Texto Alternativo](docs/Inferencia.png)
+![Texto Alternativo](docs/Analise_modelos.png)
+
 
 
 ### Sinta-se à vontade para usar, modificar e distribuir o código conforme necessário. ###

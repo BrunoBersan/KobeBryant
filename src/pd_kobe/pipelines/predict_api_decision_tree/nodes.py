@@ -158,26 +158,36 @@ def plot_shot_predictions_and_metrics(data: pd.DataFrame, predictions: pd.DataFr
     
     # Carregar o modelo do MLflow Model Registry 
 
-    # Separar variáveis preditoras e alvo
-    X_test = data.drop(columns=['shot_made_flag'])
-    y_test = data['shot_made_flag']
-    
-    # Fazer previsões
-    y_pred = model.predict(X_test)
-    y_proba = model.predict_proba(X_test)[:, 1]
-    
-    # Calcular métricas
-    metrics = {
-        "accuracy": accuracy_score(y_test, y_pred),
-        "precision": precision_score(y_test, y_pred),
-        "recall": recall_score(y_test, y_pred),
-        "f1_score": f1_score(y_test, y_pred),
-        "roc_auc": roc_auc_score(y_test, y_proba),
-        "log_loss": log_loss(y_test, y_proba)
-    }
-    metrics_df = pd.DataFrame([metrics])
-    y_proba_df = pd.DataFrame(y_proba, columns=["probability"])
-    
+    mlflow.set_experiment("ProjetoKobe")
+    with mlflow.start_run(run_name="PipelineAplicacao_Arvore_decisao", nested=True):
+        # Separar variáveis preditoras e alvo
+        X_test = data.drop(columns=['shot_made_flag'])
+        y_test = data['shot_made_flag']
+        
+        # Fazer previsões
+        y_pred = model.predict(X_test)
+        y_proba = model.predict_proba(X_test)[:, 1]
+        
+        # Calcular métricas
+        metrics = {
+            "accuracy": accuracy_score(y_test, y_pred),
+            "precision": precision_score(y_test, y_pred),
+            "recall": recall_score(y_test, y_pred),
+            "f1_score": f1_score(y_test, y_pred),
+            "roc_auc": roc_auc_score(y_test, y_proba),
+            "log_loss": log_loss(y_test, y_proba)
+        }
+        metrics_df = pd.DataFrame([metrics])
+        y_proba_df = pd.DataFrame(y_proba, columns=["probability"])
+
+        mlflow.log_metric("accuracy", metrics['accuracy'])
+        mlflow.log_metric("precision", metrics['precision'])
+        mlflow.log_metric("recall", metrics['recall'])
+        mlflow.log_metric("f1_score", metrics['f1_score'])
+        mlflow.log_metric("roc_auc", metrics['roc_auc']) 
+        mlflow.log_metric("logloss", metrics['log_loss'])
+
+
     # Matriz de Confusão
     cm = confusion_matrix(y_test, y_pred)
     plt.figure(figsize=(6, 6))
