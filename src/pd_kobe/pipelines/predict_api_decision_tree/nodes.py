@@ -156,8 +156,7 @@ def plot_shot_predictions_and_metrics(data: pd.DataFrame, predictions: pd.DataFr
     print(f"Gráfico salvo em: {output_path}")
     plt.close()
     
-    # Carregar o modelo do MLflow Model Registry 
-
+    # Carregar o modelo do MLflow Model Registry  
     mlflow.set_experiment("ProjetoKobe")
     with mlflow.start_run(run_name="PipelineAplicacao_Arvore_decisao", nested=True):
         # Separar variáveis preditoras e alvo
