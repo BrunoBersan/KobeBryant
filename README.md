@@ -1,3 +1,6 @@
+
+[Projeto completo:](https://github.com/BrunoBersan/KobeBryant)
+
 # Projeto de Previsão de Arremessos do Kobe Bryant
 
 # Visão Geral
