@@ -204,7 +204,10 @@ Para chegar a esta conclusão, foi criado um pipeline "model_data_analize" onde 
 Aqui podemos ver que os dados de homologação e produção são perfeitamente separáveis, inclusive visualmente. Um modelo de regressão logistica poderia separar perfeitamente estes dados conforme vemos no seguinte plot:
 
 ![Texto Alternativo](data/08_reporting/roc_curve_report_logistic_regression_test.png)
- 
+
+Podemos ver que das 9 colunas analisadas, 8 tiveram drift
+
+![Texto Alternativo](docs/data_drift.png)
 
 # Resultados
 
