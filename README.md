@@ -191,6 +191,8 @@ Esses gráficos são salvos no diretório data/08_reporting/ com nomes que indic
    - **Provisionamento (Deployment)** Através dos comandos para servir o modelo, conforme mostrado anteriormente, temos a opção de escolher o 'Production' ao invés do 'Latest' para servir o modelo promovido a produção.
    obs: Os detalhes do experimento, registros das métricas podem ser observados em **/docs** 
 
+![Texto Alternativo](docs/ExperimentoMLflow.png)
+
 ### Pycaret ### 
    O Pycaret é uma biblioteca Python para automação de Machine Learning (AutoML). Ele simplifica e acelera o desenvolvimento de modelos de ML permitindo que seja possível a comparação e experimentos de diferentes algoritmos e pipelines com poucas linhas de código. O Pycaret é uma biblioteca completa e muito eficiente.
    #### Para que o Pycaret foi usado no projeto? ####
