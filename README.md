@@ -36,6 +36,9 @@ pd-kobe/
 │   │   │   ├── model_training/     # Pipeline de treinamento de modelos
 │   │   │   ├── model_predicts/     # Pipeline de resultados e previsões dos modelos treinados
 │   │   │   ├── reporting/          # Pipeline de gráficos e métricas visuais
+│   │   │   ├── model_data_analize/ # Pipeline de verificação de data drift e dados de produção
+│   │   │   ├── predict_api_decision_tree/         # Pipeline que consome os dados da api /invocations do mflow do modelo de árvore de decisão
+│   │   │   ├── predict_api_logistic_regression/   # Pipeline que consome os dados da api /invocations do mflow do modelo de Regressão logistica
 │   │   │   └── nodes.py            # Funções dos nós do pipeline
 │   │   ├── settings.py             # Configurações do projeto
 │   │   └── __init__.py             # Arquivo de inicialização
@@ -134,6 +137,9 @@ O pipeline reporting é responsável por gerar relatórios visuais e gráficos p
 Esses gráficos são salvos no diretório data/08_reporting/ com nomes que indicam o modelo e o conjunto de dados (ex.: confusion_matrix_report_LR_train.png).
 - **Previsão via API (serve_and_predict)**: fFaz a requisição à API (/invocations) para prever os arremessos no conjunto de produção (data_features_prod) e retorna as previsões como um DataFrame (predictions).
 - **Gráfico de Previsões (plot_shot_predictions)**: Gera um gráfico de dispersão com os locais dos arremessos no conjunto de produção (lat e lon), usando as previsões do modelo. Arremessos previstos como convertidos (1) são representados por bolinhas verdes, e arremessos previstos como errados (0) por bolinhas vermelhas. O gráfico é salvo em data/08_reporting/shot_predictions.png.
+
+### 6. Análise dos dados de produção e data drift (model_data_analize)
+   O pipeline model_data_analize foi criado para verificar o data drift entre os datasets de homologação e produção. Ele rotula os dados com a coluna data_new (1 para produção e 0 para homologação), combina os datasets e os separa em treino e teste. Em seguida, treina uma regressão logística para avaliar a separabilidade, gerando métricas e gráficos como dispersão, curva ROC e barras de métricas, salvos em data/08_reporting/. Além disso, usa o evidently para comparar as distribuições das features, detectando drift e salvando um relatório HTML em data/08_reporting/drift_report.html, com resultados logados no MLflow.
 
 
 # Descrição dos artefatos gerados 
