@@ -2,6 +2,7 @@
 This is a boilerplate pipeline 'model_serving'
 generated using Kedro 0.19.12
 """
+from datetime import date
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt 
@@ -155,10 +156,11 @@ def plot_shot_predictions_and_metrics(data: pd.DataFrame, predictions: pd.DataFr
     plt.savefig(output_path, dpi=300, bbox_inches='tight')
     print(f"Gráfico salvo em: {output_path}")
     plt.close()
-    
-    # Carregar o modelo do MLflow Model Registry  
-    mlflow.set_experiment("ProjetoKobe")
-    with mlflow.start_run(run_name="PipelineAplicacao_Arvore_decisao", nested=True):
+     
+    run_name = f"pipeline_aplicacao_decision_tree_{date.today().strftime('%Y-%m-%d')}"
+    with mlflow.start_run(run_name=run_name, nested=True):
+        mlflow.set_tag("project_name", "projeto_kobe")
+        mlflow.set_tag("stage", "pipeline_aplicacao_decision_tree")           
         # Separar variáveis preditoras e alvo
         X_test = data.drop(columns=['shot_made_flag'])
         y_test = data['shot_made_flag']

@@ -2,6 +2,7 @@
 This is a boilerplate pipeline 'model_serving'
 generated using Kedro 0.19.12
 """
+from datetime import date
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt 
@@ -65,8 +66,6 @@ def serve_and_predict(data: pd.DataFrame,model_name, model, port: int = 5002) ->
         print(response.text)
         raise RuntimeError("Falha ao consumir a API do MLflow.")
  
-
-
 def plot_shot_predictions_and_metrics(data: pd.DataFrame, predictions: pd.DataFrame, output_path: str, model, model_name: str):
     """
     Gera gráficos de dispersão, matriz de confusão, curva ROC e tabela de métricas
@@ -159,8 +158,10 @@ def plot_shot_predictions_and_metrics(data: pd.DataFrame, predictions: pd.DataFr
     # Carregar o modelo do MLflow Model Registry  
     # Separar variáveis preditoras e alvo
     
-    mlflow.set_experiment("ProjetoKobe")
-    with mlflow.start_run(run_name="PipelineAplicacao_Regressao_logistica", nested=True):
+    run_name = f"pipeline_aplicacao_logistic_regression_{date.today().strftime('%Y-%m-%d')}"
+    with mlflow.start_run(run_name=run_name, nested=True):
+        mlflow.set_tag("project_name", "projeto_kobe")
+        mlflow.set_tag("stage", "pipeline_aplicacao_logistic_regression")       
         # Separar variáveis preditoras e alvo
         X_test = data.drop(columns=['shot_made_flag'])
         y_test = data['shot_made_flag']

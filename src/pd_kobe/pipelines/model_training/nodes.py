@@ -1,3 +1,4 @@
+from datetime import date
 import pandas as pd
 from pycaret.classification import *
 from sklearn.metrics import log_loss
@@ -40,15 +41,14 @@ def register_model_with_mlflow(model, model_name, run_metrics):
 
 def logistic_regression_model(train_features: pd.DataFrame, session_id, path_mlflow_runs) -> dict:
     # Definir o tracking URI (ajuste conforme sua preferência)
-    
-    mlflow.set_tracking_uri(path_mlflow_runs)
-    while mlflow.active_run():
-        mlflow.end_run()
-
+     
     exp = configure_pycaret_setup(train_features, session_id)
     
-    mlflow.set_experiment("ProjetoKobe")
-    with mlflow.start_run(run_name="Treinamento_Regressao_logistica", nested=True):  # Usar execução aninhada
+    run_name = f"model_training_logistic_regression_{date.today().strftime('%Y-%m-%d')}"
+    with mlflow.start_run(run_name=run_name, nested=True):
+        mlflow.set_tag("project_name", "projeto_kobe")
+        mlflow.set_tag("stage", "model_training_logistic_regression")   
+         
         lr = exp.create_model('lr', verbose=False)
 
         lr_search_space = { 
@@ -111,15 +111,14 @@ def logistic_regression_model(train_features: pd.DataFrame, session_id, path_mlf
     return tuned_lr
 
 def decision_tree_model(train_features: pd.DataFrame, session_id, path_mlflow_runs) -> dict:
-    # Definir o tracking URI (ajuste conforme sua preferência)
-    mlflow.set_tracking_uri(path_mlflow_runs)
-    while mlflow.active_run():
-        mlflow.end_run()
-
+ 
     exp = configure_pycaret_setup(train_features, session_id)
     
-    mlflow.set_experiment("ProjetoKobe")
-    with mlflow.start_run(run_name="Treinamento_arvore_decisao", nested=True):  # Usar execução aninhada
+    run_name = f"model_training_decision_tree_{date.today().strftime('%Y-%m-%d')}"
+    with mlflow.start_run(run_name=run_name, nested=True):
+        mlflow.set_tag("project_name", "projeto_kobe")
+        mlflow.set_tag("stage", "model_training_decision_tree")   
+
         dt = exp.create_model('dt', verbose=False)
 
         dt_search_space = { 

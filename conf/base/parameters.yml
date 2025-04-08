@@ -8,3 +8,8 @@ plot_output_path_lr: "data/08_reporting/shot_predictions_lr.png"
 plot_output_path_dt: "data/08_reporting/shot_predictions_dt.png"
 
 path_mlflow_runs: "file:///C:/Projetos/especializacao_ia/segundo_modulo/pd-kobe/mlruns"
+
+
+data_processing:
+  label_producao: 1
+  label_homologacao: 0

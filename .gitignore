@@ -24,6 +24,8 @@ conf/**/*credentials*
 # ignore file based logs
 *.log
 
+.mlflow_parent_run_id
+
 ##########################
 # Common files
 

@@ -141,3 +141,35 @@ metrics_prod_dt:
   filepath: data/07_model_output/metrics_prod_dt.csv  
 
  
+
+#ANÁLISE DE DATA DRIFT
+
+producao_data_labeled:
+  type: pandas.CSVDataset
+  filepath: data/02_intermediate/producao_data_labeled.parquet
+
+homologacao_data_labeled:
+  type: pandas.CSVDataset
+  filepath: data/02_intermediate/homologacao_data_labeled.parquet
+
+combined_data_analize:
+  type: pandas.CSVDataset
+  filepath: data/03_primary/combined_data_analize.parquet
+
+
+train_data_analize:
+  type: pandas.ParquetDataset
+  filepath: data/05_model_input/train_data_analize.parquet    
+
+test_data_analize:
+  type: pandas.ParquetDataset
+  filepath: data/05_model_input/test_data_analize.parquet   
+
+# Relatórios como dicionários
+separability_report:
+  type: pickle.PickleDataset
+  filepath: data/06_models/separability_report.pickle
+
+drift_report:
+  type: pickle.PickleDataset
+  filepath: data/06_models/drift_report.pickle 

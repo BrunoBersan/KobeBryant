@@ -197,6 +197,13 @@ Esses gráficos são salvos no diretório data/08_reporting/ com nomes que indic
 # Problemas no Projeto
 
 Os dados fornecidos para treinamento do modelo continham apenas shots realizados de dentro do garrafão, ou seja, shots de 2 pontos. A base de produção foi fornecida apenas com shots realizados de fora do garrafão 3 pontos. Por conta disso, tivemos um modelo que não foi capaz de prever os acertos de produção, classificando tudo como erro, no caso da regressão logistica e chutando aleatóriamente, no caso da árvore de decisão. A Árvore de decisão ainda conseguiu prever alguns acertos, mas é perceptível que não passou de aleatoriedade. Já a regressão logística, não foi capaz de prever nenhum arremesso como positivo.
+Para chegar a esta conclusão, foi criado um pipeline "model_data_analize" onde criei uma coluna data_new e setei como 1 para produção e 0 para os dados de homologação, fiz a junção dos dois datasets e então treinei um modelo de regressão logistica para analisar a separabilidade das informações. Este processo nos mostra que os dados novos e antigos são perfeitamente separaveis, o que indica um alto grau de data drift nos dados. Para exibir detalhes disso, foram criados alguns plots e métricas como por exemplo um gráfico de dispersão:
+
+![Texto Alternativo](data/08_reporting/scatter_plot_logistic_regression_test.png)
+
+Aqui podemos ver que os dados de homologação e produção são perfeitamente separáveis, inclusive visualmente. Um modelo de regressão logistica poderia separar perfeitamente estes dados conforme vemos no seguinte plot:
+
+![Texto Alternativo](data/08_reporting/roc_curve_report_logistic_regression_test.png)
  
 
 # Resultados
@@ -333,19 +340,7 @@ pip install -r requirements.txt
     - Defina o URI de rastreamento do MLflow (já configurado no projeto):
         existe um parametro em conf/base/parameters.yml chamado 'path_mlflow_runs' coloque a pasta onde ficará o projeto no seu ambiente e adicione /mlruns ao final.
 
-3. **Executar o Pipeline**
-```bash
-    kedro run 
-```    
-
-   #### Isso irá: ####
-   1. Pré-processar os dados e selecionar as features.
-   2. Treinar os modelos (Regressão Logística e Árvore de Decisão).
-   3. Fazer previsões dos modelos localmente
-   4. Gerar o gráfico de dispersão, curva, roc, métricas e mais.
-   5. Disponibilizar a estrutura para iniciar a dashboard e a inferência
-
-4. **Para criar a API com os modelos e consumi-la**
+3. **Para criar a API com os modelos e consumi-la**
    1. **Modelo árvore de decisão**
       - Executar o comando:  
       ```bash 
@@ -370,6 +365,18 @@ pip install -r requirements.txt
        kedro run --pipeline predict_api_logistic_regression
       ```
       - Serão criados os artefatos referentes a análise da árvore de decisão ( Mais detalhes na sessão artefatos )   
+
+4. **Executar o Pipeline**
+```bash
+    kedro run 
+```    
+
+   #### Isso irá: ####
+   1. Pré-processar os dados e selecionar as features.
+   2. Treinar os modelos (Regressão Logística e Árvore de Decisão).
+   3. Fazer previsões dos modelos localmente
+   4. Gerar o gráfico de dispersão, curva, roc, métricas e mais.
+   5. Disponibilizar a estrutura para iniciar a dashboard e a inferência
 
 5. **Para executar a Dashboard do stremlit**
    - Acesse o diretório do streamlit no projeto pelo terminal (cd streamlit)

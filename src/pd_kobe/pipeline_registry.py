@@ -1,6 +1,6 @@
 """Project pipelines."""
 from kedro.framework.project import find_pipelines
-from pd_kobe.pipelines import data_preparation, data_processing, model_training, model_predicts, reporting, predict_api_decision_tree, predict_api_logistic_regression
+from pd_kobe.pipelines import data_preparation, data_processing, model_training, model_predicts, reporting, predict_api_decision_tree, predict_api_logistic_regression, model_data_analize
 from kedro.pipeline import Pipeline
 
 def register_pipelines() -> dict[str, Pipeline]:
@@ -14,17 +14,20 @@ def register_pipelines() -> dict[str, Pipeline]:
         "data_processing": data_processing.create_pipeline(),
         "model_training": model_training.create_pipeline(),
         "model_predicts": model_predicts.create_pipeline(),
-        "reporting": reporting.create_pipeline(),
-        
+        "reporting": reporting.create_pipeline(), 
         "predict_api_decision_tree": predict_api_decision_tree.create_pipeline(),
         "predict_api_logistic_regression": predict_api_logistic_regression.create_pipeline(),
-
+        "model_data_analize": model_data_analize.create_pipeline(),
+        
         "__default__": 
             data_preparation.create_pipeline() + 
             data_processing.create_pipeline() + 
             model_training.create_pipeline() + 
             model_predicts.create_pipeline() + 
-            reporting.create_pipeline()
+            reporting.create_pipeline() + 
+            predict_api_decision_tree.create_pipeline() + 
+            predict_api_logistic_regression.create_pipeline() + 
+            model_data_analize.create_pipeline(), 
     } 
 
     return pipelines

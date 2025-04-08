@@ -1,3 +1,4 @@
+from datetime import date
 import pandas as pd
 from sklearn.model_selection import train_test_split
 import mlflow
@@ -26,9 +27,11 @@ def split_data(df: pd.DataFrame) -> dict:
     y = df['shot_made_flag']  
     
     test_size = 0.2
+    run_name = f"data_processing_features_{date.today().strftime('%Y-%m-%d')}"
+    with mlflow.start_run(run_name=run_name, nested=True):
+        mlflow.set_tag("project_name", "projeto_kobe")
+        mlflow.set_tag("stage", "data_processing_features") 
 
-    mlflow.set_experiment("ProjetoKobe")
-    with mlflow.start_run(run_name="PreparacaoDados"):
         # Split estratificado
         X_train, X_test, y_train, y_test = train_test_split(
             X, y, test_size=test_size, stratify=y, random_state=42

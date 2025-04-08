@@ -28,6 +28,9 @@ https://docs.kedro.org/en/stable/kedro_project_setup/settings.html."""
 # CONFIG_LOADER_CLASS = OmegaConfigLoader
 
 # Keyword arguments to pass to the `CONFIG_LOADER_CLASS` constructor.
+from pd_kobe.hooks.mlflow_hook import MLflowHook
+
+
 CONFIG_LOADER_ARGS = {
     "base_env": "base",
     "default_run_env": "local",
@@ -36,6 +39,10 @@ CONFIG_LOADER_ARGS = {
     #     "parameters": ["parameters*", "parameters*/**", "**/parameters*"],
     # }
 }
+
+HOOKS = (
+    MLflowHook(),
+)
 
 # Class that manages Kedro's library components.
 # from kedro.framework.context import KedroContext
