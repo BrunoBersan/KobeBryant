@@ -168,8 +168,8 @@ test_data_analize:
 # Relatórios como dicionários
 separability_report:
   type: pickle.PickleDataset
-  filepath: data/06_models/separability_report.pickle
+  filepath: data/07_model_output/separability_report.pickle
 
 drift_report:
   type: pickle.PickleDataset
-  filepath: data/06_models/drift_report.pickle 
+  filepath: data/07_model_output/drift_report.pickle 

@@ -143,22 +143,33 @@ Esses gráficos são salvos no diretório data/08_reporting/ com nomes que indic
 
 
 # Descrição dos artefatos gerados 
-   - **01_raw/data_shots e dataset_kobe_prod** = Dados de arremessos não tratados fornecidos para o projeto. (formato parquet)
+   1. **01_raw/data_shots e dataset_kobe_prod** = Dados de arremessos não tratados fornecidos para o projeto. (formato parquet)
 
-   - **02_intermediate/data_shots_not_null e data_shots_prod_not_null** = Dados de arremessos depois de ter tratados os valores nulos(formato parquet)
+   2. **02_intermediate** 
+      - **data_shots_not_null e data_shots_prod_not_null** = Dados de arremessos depois de ter tratados os valores nulos(formato parquet)
+      - **homologacao_data_labeled e producao_data_labeled** = Dados de arremesos rotulados para analise de data drift
 
-   - **03_primary/data_shots_normalized e data_shots_prod_normalized** = Dados dos arremessos com análise e remoção de duplicatas(formato parquet)
-   
-   - **04_feature/data_features_prod e data_features** = Dados gerados a partir da seleção das features (formato parquet)
+   3. **03_primary** 
+      - **data_shots_normalized e data_shots_prod_normalized** = Dados dos arremessos com análise e remoção de duplicatas(formato parquet)
+      - **combined_data_analize** = Dados combinados do dataset de produção e homologação com a flag data_new para verificacao de data drift
 
-   - **05_model_input/shots_test e shots_train** = Separação dos dados em treino e teste na proporção 80% e 20% estratificados prontos para o treinamento dos modelos (formato parquet)
+   4. **04_feature**
+      - **data_features_prod e data_features** = Dados gerados a partir da seleção das features (formato parquet)
+      
 
-   - **06_models/dt_tuned e lr_tuned** = Modelos treinados, ajustados(tuned) e salvos no formato .pickle 
+   5. **05_model_input**
+      - **shots_test e shots_train** = Separação dos dados em treino e teste na proporção 80% e 20% estratificados prontos para o treinamento dos modelos (formato parquet)
+      - **test_data_analize e train_data_analize** = Separação dos dados em treino e teste na proporção 80% e 20% estratificados para o treinamento do modelo de verificação de data drift
 
-   - **07_model_output/** = Métricas e previsões dos modelos (.csv)
+   6. **06_models**
+      - **dt_tuned e lr_tuned** = Modelos treinados, ajustados(tuned) e salvos no formato .pickle       
+
+   7. **07_model_output/** = Métricas e previsões dos modelos (.csv)
       - Arquivos de métricas (metrics_*) contém as métricas dos modelos em diferentes cenários (Treino, Teste e Prod)
       - Arquivos de probabilidades (predicted_probabilities_*) também com diferentes cenários (Treino, Teste e Prod), 
       - arquivos de predições (predictions_*) Arquivos das predições dos modelos nos diferentes cenários (Treino, Teste e Prod)
+      - **drift_report.pickle** = Armazena o dicionário gerado pelo evidently com os resultados detalhados da análise de data drift.
+      - **separability_report** = Armazena o dicionário gerado pelo classification_report do sklearn, que contém as métricas de desempenho (precisão, recall, F1-score, etc.)
 
    - **08_reporting** = Plots e análises gerais dos dados e modelos (.png )
       - confusion_matrix_* = Análise da matriz de confusão nos diferentes cenários (Treino, Teste e Prod)
