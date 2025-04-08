@@ -196,8 +196,9 @@ Esses gráficos são salvos no diretório data/08_reporting/ com nomes que indic
 
 # Problemas no Projeto
 
-Os dados fornecidos para treinamento do modelo continham apenas shots realizados de dentro do garrafão, ou seja, shots de 2 pontos. A base de produção foi fornecida apenas com shots realizados de fora do garrafão 3 pontos. Por conta disso, tivemos um modelo que não foi capaz de prever os acertos de produção, classificando tudo como erro, no caso da regressão logistica e chutando aleatóriamente, no caso da árvore de decisão. A Árvore de decisão ainda conseguiu prever alguns acertos, mas é perceptível que não passou de aleatoriedade. Já a regressão logística, não foi capaz de prever nenhum arremesso como positivo.
-Para chegar a esta conclusão, foi criado um pipeline "model_data_analize" onde foi criada uma coluna data_new e setei como 1 para produção e 0 para os dados de homologação, fiz a junção dos dois datasets e então treinei um modelo de regressão logistica para analisar a separabilidade das informações. Este processo nos mostra que os dados novos e antigos são perfeitamente separaveis, o que indica um alto grau de data drift nos dados. Para exibir detalhes disso, foram criados alguns plots e métricas como por exemplo um gráfico de dispersão:
+Os dados utilizados para o treinamento do modelo continham exclusivamente arremessos realizados de dentro do garrafão, ou seja, arremessos de 2 pontos. Por outro lado, a base de produção foi composta apenas por arremessos realizados de fora do garrafão, correspondendo a arremessos de 3 pontos. Essa discrepância resultou em um modelo incapaz de prever com precisão os acertos na produção. No caso da regressão logística, o modelo classificou todos os arremessos como erros, enquanto a árvore de decisão apresentou previsões aleatórias. Embora a árvore de decisão tenha conseguido prever alguns acertos, é evidente que esses resultados foram fruto de aleatoriedade, sem um padrão consistente. Já a regressão logística não foi capaz de prever nenhum arremesso como positivo.
+
+Para chegar a essa conclusão, foi desenvolvido um pipeline chamado model_data_analize. Nesse pipeline, foi adicionada uma coluna data_new aos datasets de homologação e produção, atribuindo o valor 1 para os dados de produção e 0 para os dados de homologação. Em seguida, foi realizada a junção dos dois datasets e um modelo de regressão logística foi treinado para avaliar a separabilidade entre os dados. Esse processo revelou que os dados de produção e homologação são perfeitamente separáveis, indicando um alto grau de data drift nos dados de produção. Para detalhar essa análise, foram gerados diversos gráficos e métricas, incluindo, por exemplo, um gráfico de dispersão que ilustra visualmente a separação entre os dois conjuntos de dados.
 
 ![Texto Alternativo](data/08_reporting/scatter_plot_logistic_regression_test.png)
 
@@ -205,7 +206,7 @@ Aqui podemos ver que os dados de homologação e produção são perfeitamente s
 
 ![Texto Alternativo](data/08_reporting/roc_curve_report_logistic_regression_test.png)
 
-Podemos ver que das 9 colunas analisadas, 8 tiveram drift
+Abaixo podemos ver o relatório de data drift gerado pelo evidently que revelou que 88,89% das colunas (8 de 9) apresentaram drift, indicando uma mudança significativa nos dados de produção em relação aos de homologação, com um drift score elevado em features como short_distance (2,03584), lat, loc_y e loc_x. A única feature sem drift foi playoffs (0,01318), mostrando estabilidade. O teste Wasserstein distance (normed) foi usado para detectar essas diferenças, e o dataset drift foi confirmado, pois a proporção de colunas com drift superou o limiar de 0,5. Isso pode impactar a performance do modelo treinado em homologação, sugerindo a necessidade de investigar as causas do drift, reavaliar o modelo e, possivelmente, re-treiná-lo com os dados de produção.
 
 ![Texto Alternativo](docs/data_drift.png)
 
