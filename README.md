@@ -5,15 +5,15 @@
 
 # Visão Geral
 
-Este projeto foi desenvolvido como parte do **Curso de Especialização em Inteligência Artificial (INFNET)** e tem como objetivo prever se um arremesso do Kobe Bryant foi convertido ou não com base em dados históricos de jogos da NBA. Utilizando técnicas de machine learning, o projeto emprega o framework **Kedro** para gerenciamento de pipelines de dados, o **PyCaret** para treinamento e ajuste de modelos, e o **MLflow** para rastreamento de experimentos e implantação de modelos. O objetivo é construir um pipeline robusto que processe os dados, treine modelos, faça previsões e visualize os resultados de forma clara e informativa.
+Este projeto foi desenvolvido como parte do **Curso de Especialização em Inteligência Artificial (INFNET)** e tem como objetivo prever se um arremesso do Kobe Bryant foi convertido ou não com base em dados históricos de jogos da NBA. Utilizando técnicas de machine learning, o projeto emprega o framework **Kedro** para gerenciamento de pipelines de dados, o **PyCaret** para treinamento e ajuste de modelos, **MLflow** para rastreamento de experimentos e implantação de modelos e o **Streamlit** para visualização de dados e previsão a partir dos inputs do usuário. O objetivo é construir um pipeline completo que processe os dados, treine modelos, faça previsões e visualize os resultados de forma clara e informativa.
 
-O conjunto de dados utilizado contém características como a localização do arremesso (`lat` e `lon`), tipo de arremesso (`shot_type`), tipo de ação (`action_type`), distância do arremesso (`shot_distance`), período do jogo (`period`) e a variável alvo `shot_made_flag` (1 para arremesso convertido, 0 para arremesso errado). O projeto abrange pré-processamento de dados, treinamento de modelos, previsão por meio de uma API e visualização das previsões em um gráfico de dispersão.
+O conjunto de dados utilizado contém características como a localização do arremesso (`lat` e `lon`), tipo de arremesso (`shot_type`), tipo de ação (`action_type`), distância do arremesso (`shot_distance`), período do jogo (`period`) e a variável alvo `shot_made_flag` (1 para arremesso convertido, 0 para arremesso errado). O escopo do projeto inclui o pré-processamento de dados, treinamento de modelos, previsão por meio de uma API, visualização das previsões em um gráficos e análise de data drift.
 
 ---
 
 # Estrutura do Projeto
 
-O projeto é organizado utilizando o framework **Kedro**, que garante um pipeline de dados modular e reprodutível. Abaixo está a estrutura do projeto:
+O projeto é organizado utilizando o framework **Kedro**, que garante um pipeline de dados modular e reprodutível. Na sequencia está a estrutura do projeto:
 
 ```
 
@@ -54,11 +54,11 @@ pd-kobe/
 
 1. **Pré-processamento de Dados**:
    - Foram fornecidas bases de dados de produção e desenvolvimento para treinamento e validação do modelo.
-   - Aplicamos algumas regras e validações como tratamento de nulos e remoção de duplicatas
+   - Foram aplicadas algumas regras e validações como tratamento de nulos e remoção de duplicatas
 
 2. **Treinamento de Modelos**:
    - Dois modelos são treinados: Regressão Logística (`logistic_regression_model`) e Árvore de Decisão (`decision_tree_model`).
-   - O PyCaret é usado para configurar o ambiente de treinamento, criar os modelos e ajustá-los com busca bayesiana de hiperparâmetros (usando a biblioteca `scikit-optimize`).
+   - O PyCaret foi usado para configurar o ambiente de treinamento, criar os modelos e ajustá-los com busca bayesiana de hiperparâmetros (usando a biblioteca `scikit-optimize`).
    - O MLflow rastreia os experimentos, logando métricas e os modelos treinados.
 
 3. **Previsão via API**:
@@ -71,11 +71,14 @@ pd-kobe/
    - Arremessos previstos como convertidos (`1`) são representados por **bolinhas verdes**, e arremessos previstos como errados (`0`) por **bolinhas vermelhas**.
    - O gráfico é salvo em `data/08_reporting/shot_predictions.png`.
 
-4. **Dashboard e Inferência**:
+5. **Dashboard e Inferência**:
    - Foi criada uma dashboard com uma página para realizar inferências aos modelos e também uma para análise comparativa dos modelos 
    - Framework utilizado para a construção das páginas foi o Stremlit
    - O gráfico é salvo em `data/08_reporting/shot_predictions.png`.   
 
+6. **Análise de dados de produção e monitoramento**:
+   - Foi treinado um modelo de regressão logística para avaliar a integridade dos dados de produção, analisando assim possíveis data drifts nos dados.
+   - Os resultados desta análise estão em `data/08_reporting/separability_metrics_logistic_regression_test.png`, `data/08_reporting/scatter_plot_logistic_regression_test.png` e  `data/08_reporting/roc_curve_report_logistic_regression_test.png`
 ---
  
 # Diagrama de Pipelines e Fluxos
@@ -87,28 +90,23 @@ pd-kobe/
 
  ### 1. Preparação dos Dados (data_preparation) ###
 O pipeline data_preparation é responsável pela limpeza inicial dos dados brutos, garantindo que estejam prontos para as próximas etapas do projeto. Ele processa tanto o conjunto de dados principal (data_shots) quanto o conjunto de produção (data_shots_prod). As principais etapas incluem:
-
 - Tratamento de Valores Nulos (handle_missing_values): Remove todas as linhas que contêm valores nulos no conjunto de dados, garantindo que o modelo receba apenas dados completos.
-
 - Remoção de Duplicatas e Validações (remove_duplicates_and_validate): Elimina registros duplicados, mantendo apenas a última ocorrência, e realiza validações adicionais para assegurar a integridade dos dados.
 
 
  ### 2. Processamento dos Dados e Seleção de Features (data_processing) ### 
 O pipeline data_processing realiza o processamento e a seleção de features, preparando os dados para o treinamento do modelo. Ele também divide o conjunto de dados em treino e teste. As etapas incluem:
 
-
 - **Análise e Seleção de Features (analyze_and_select_features)**: Seleciona um subconjunto de features relevantes para o modelo, incluindo lat, lon, minutes_remaining, period, playoffs, shot_distance, loc_x, loc_y e shot_made_flag. Essa etapa é aplicada tanto ao conjunto de dados principal (data_shots_normalized) quanto ao conjunto de produção (data_shots_prod_normalized), gerando os datasets data_features e data_features_prod, respectivamente.
-
 - **Divisão dos Dados (split_data)**: Divide o conjunto de dados data_features em conjuntos de treino (shots_train) e teste (shots_test) na proporção 80/20, utilizando estratificação com base na variável alvo shot_made_flag para manter a proporção de classes. A divisão é feita com um random_state=42 para garantir reprodutibilidade. A estratificação garante que a distribuição da variável alvo seja mantida em ambos os conjuntos, reduzindo o risco de viés na separação.
-
-
 - **split_data_node**: Divide o conjunto de dados principal em treino e teste.
+
 
  ### 3. Treinamento de Modelos (model_training) ###
 O pipeline model_training é responsável pelo treinamento e ajuste de dois modelos de machine learning: uma Regressão Logística e uma Árvore de Decisão. Ele utiliza o PyCaret para configurar o ambiente de treinamento e o MLflow para rastrear os experimentos. As etapas incluem:
 
 - **Configuração do PyCaret (configure_pycaret_setup)**: Configura o ambiente de treinamento do PyCaret, definindo a variável alvo (shot_made_flag), utilizando todos os núcleos disponíveis (n_jobs=-1) e habilitando o uso de GPU (use_gpu=True).
-- **Treinamento da Regressão Logística (logistic_regression_model)**: Treina um modelo de Regressão Logística com ajuste de hiperparâmetros usando busca bayesiana (via scikit-optimize). O espaço de busca inclui parâmetros como penalty, C, class_weight, max_iter, tol e solver. O modelo é otimizado com base no F1 Score, e os resultados (métricas e modelo) são logados no MLflow.
+- **Treinamento da Regressão Logística (logistic_regression_model)**: Treina um modelo de Regressão Logística com ajuste de hiperparâmetros usando busca bayesiana (via scikit-optimize). O espaço de busca inclui parâmetros como penalty, C, class_weight, max_iter, tol e solver. O modelo é otimizado com base no F1 Score, e os resultados (métricas e modelo) são logados no MLflow e também em **/data/08_reporting**.
 - **Treinamento da Árvore de Decisão (decision_tree_model)**: Treina um modelo de Árvore de Decisão com ajuste de hiperparâmetros, também usando busca bayesiana. O espaço de busca inclui parâmetros como criterion, splitter, max_depth, min_samples_split, min_samples_leaf, max_features, ccp_alpha e max_leaf_nodes. O modelo é otimizado com base no F1 Score, e os resultados são logados no MLflow.
 O pipeline contém dois nós:
 
@@ -201,7 +199,7 @@ Esses gráficos são salvos no diretório data/08_reporting/ com nomes que indic
 
 ### Streamlit ### 
    O Streamlit é um framework python para criar aplicativos web interativos de maneira extremamente simples e rápida, sem que seja necessário muito conhecimento em desenvolvimento web. Ele é muito utilizado na etapa de Inferência de dados, apresentação de resultados e para transformar notebooks Jupyter e scripts Python em dashboards interativos.
-   #### Para que o Pycaret foi usado no projeto? ####
+   #### Para que o Streamlit foi usado no projeto? ####
    - **Comparação de Modelos e monitoramento da saúde do modelo**: Foi criada uma página que comparou as métricas dos dois modelos com os dados de produção.
    - **Inferência dos dados**: Foi criada uma página para inputar os dados para fazer uma análise se o Kobe acertou ou errou o arremesso.
 
@@ -229,10 +227,11 @@ Abaixo podemos ver o relatório de data drift gerado pelo evidently que revelou 
 
 ![Texto Alternativo](docs/data_drift.png)
 
+
 # Resultados
 
 **Seleção do modelo para conclusão:**
-   Nesta análise observamos que a Decision Tree obteve resultados melhores com os dados de produção, conseguindo prever dados de arremesos em produção. Por sua vez a regressão logistica apresentou melhores resultados com os dados de Treino e Teste, mas perfomando muito mal em produção, o que era esperado, já que a base de dados de produção contém apenas amostras que não foram contempladas no treinamento do modelo.
+   Nesta análise observamos que a Decision Tree obteve resultados melhores com os dados de produção, conseguindo prever dados de arremesos em produção. Por sua vez a regressão logistica apresentou melhores resultados com os dados de Treino e Teste, mas perfomando muito mal em produção, o que era esperado, já que a base de dados de produção contém apenas amostras que não foram contempladas no treinamento do modelo (como foi observado na sessão anterior).
    Ambos os modelos não tinham capacidade de perfomar bem para o dataset de produção pois os dados não estavam contidos na amostra de treinamento.
    Analisando as métricas e os graficos, com os dados de Teste e não de produção, o modelo candidato para mais experimentos e tunings seria a **Regressão logistica**. 
 
@@ -243,7 +242,7 @@ Abaixo podemos ver o relatório de data drift gerado pelo evidently que revelou 
 
 **Gráfico de Dispersão**: O gráfico mostra os locais dos arremessos com bolinhas verdes (acertos) e vermelhas (erros), facilitando a análise visual das previsões.
 
-**Dashboard para inferência**: O gráfico mostra os locais dos arremessos com bolinhas verdes (acertos) e vermelhas (erros), facilitando a análise visual das previsões.
+**Dashboard para inferência**: Uma dashboard realiza inferências com dados incluidos por usuário e a aba de análise verifica e compara os dois modelos propostos no projeto.
  
 # Possíveis Melhorias
 
@@ -255,7 +254,8 @@ Abaixo podemos ver o relatório de data drift gerado pelo evidently que revelou 
 
 **Obter Probabilidades**: Atualmente, a API do MLflow retorna apenas previsões binárias. Uma melhoria seria ajustar o modelo servido para retornar as probabilidades (predict_proba) e usá-las para colorir o gráfico com um gradiente.
 
-
+ 
+ 
 # Monitoramento e Saúde do Modelo 
 
 Monitorar a saúde de um modelo em produção é essencial para garantir que ele continue fazendo previsões confiáveis ao longo do tempo. Esse monitoramento pode ser dividido em dois cenários:
@@ -273,6 +273,7 @@ Acurácia, Precisão, Recall e F1-Score (para classificação)
 Erro Médio Absoluto (MAE), Erro Quadrático Médio (MSE), R² (para regressão)
 Matriz de Confusão: Identifica padrões de erro do modelo
 Curva ROC e AUC: Mede a separabilidade entre classes
+Data drift de colunas e um treinamento especifico para verificar a separabilidade dos dados de treino e produção
 
 **Técnicas de Monitoramento**
 
@@ -335,6 +336,7 @@ Para executar o projeto, você precisa ter as seguintes ferramentas instaladas:
 - **Scikit-learn**
 - **Scikit-optimize** (para ajuste de hiperparâmetros)
 - **Stremlit**  ( para a construção das páginas )
+- **kedro-datasets[pandas]** ( gerenciamento dos datasets )
 
 Você pode instalar as dependências listadas no arquivo `requirements.txt`:
 
@@ -355,6 +357,9 @@ pip install -r requirements.txt
 ```bash  
         conda activate kedro_env
 ```
+
+Acesse a pasta do projeto e então execute: 
+
 ```bash
         pip install -r requirements.txt
 ```
@@ -369,7 +374,7 @@ pip install -r requirements.txt
       ```bash 
           mlflow models serve -m "models:/decision_tree_model/latest" -p 5001 --env-manager conda
       ```
-      - Isso irá subir o modelo de árvore de decisão para inferência
+      - Isso irá servir o modelo de árvore de decisão para inferência
       - Rodar o pipeline de inferência da DT : 
       ```bash 
          kedro run --pipeline predict_api_decision_tree
