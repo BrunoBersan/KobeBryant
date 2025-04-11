@@ -42,6 +42,8 @@ pd-kobe/
 │   │   │   └── nodes.py            # Funções dos nós do pipeline
 │   │   ├── settings.py             # Configurações do projeto
 │   │   └── __init__.py             # Arquivo de inicialização
+├── docs/                           # Diretório com as documentações do projeto
+├── streamlit/                      # Diretório com as paginas de UI criadas para visualização e input dos dados
 ├── mlruns/                         # Diretório do MLflow para rastreamento de experimentos
 ├── predict.py                      # Script para previsões manuais (opcional)
 ├── requirements.txt                # Dependências do projeto
